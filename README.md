@@ -42,3 +42,7 @@ The administrator page now covers geographic/segment, named/global, deal/technic
 See `audit-review.md` for findings, verification and the remaining implementation mappings.
 
 `content/requirement_summaries.py` provides short, business-focused wording for Requirement statement, Acceptance criteria and Rev Ops refinement notes in the implementation table and CSV. The stage/activity specifications and detailed change log retain the full rules. Edit these summaries alongside substantive process changes.
+
+## September 30 update
+
+`content/deployment_updates.py` shortens only the one-slide field lists; the detailed field register retains those inputs. The coordinating deployment Case now starts on the authorized Stage 6 → 7 booking transition, covers Stages 7–8 and continues afterward. Stage 6 prepares the OM/GSS logistics handoff. The build applies this timing to the stage details, ongoing activity, definitions, enablement, change log and requirements export.
