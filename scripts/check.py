@@ -164,3 +164,26 @@ for rule in ['one Territory assignment','union, not the required intersection',
              'FLS is per user/field, not per record', 'Edit Tasks', 'Dual-role user']:
     assert rule in permissions, rule
 print('PASS: audit consistency, valid-skip SQL, stage readability and Salesforce coverage safeguards.')
+
+# The slide is intentionally a shorter view of the unchanged detailed field set.
+slide=re.search(r'<tr><th scope="row" class="slide-row-label">Fields<small>.*?</tr>',index,re.S)[0]
+slide_cells=re.findall(r'<td class="slide-fields">.*?</td>',slide,re.S)
+assert len(slide_cells)==11
+labels=[[html.unescape(re.sub(r'<[^>]+>','',item)) for item in re.findall(r'<span\b[^>]*>.*?</span>',cell,re.S)] for cell in slide_cells]
+assert labels[0]==['Opportunity Name','Type','Amount','Opportunity Source','Opportunity Owner']
+assert labels[1]==['CHAMPS: Challenge, Authority, Money, Priority, Stack / Storage']
+assert 'Pipeline Entry Amount' in labels[2] and not any('Pipeline Date' in x for x in labels[2])
+assert not any(x.startswith('Stage ') and x.endswith(' Date') for cell in labels[:8] for x in cell)
+assert not any('Deployment Case' in x for x in labels[7])
+assert 'Deployment Case Link' in labels[8] and 'Deployment Case Link' in labels[9]
+assert 'Deployment Case · Stages 7–8' in index and '.ongoing-deployment{grid-column:9/span 2;' in index
+stage6=index.split('id="s6"',1)[1].split('id="s7"',1)[0]
+stage7=index.split('id="s7"',1)[1].split('id="s8"',1)[0]
+assert 'data-field="Deployment Case Link"' not in stage6
+assert 'Create or link the coordinating PS deployment Case' not in stage6
+assert 'data-field="Deployment Case Link"' in stage7
+assert 'For entry to Stage 7, find or provision the coordinating deployment Case' in stage7
+assert 'Stage 7' in by_id['BR-SS-017'][3] and 'Stage 7' in by_id['BR-SS-069'][8]
+assert 'from Stage 7' in by_id['BR-SS-061'][8]
+assert 'Create or link one coordinating Case on entry to Stage 7.' in (ROOT/'enablement.html').read_text()
+print('PASS: simplified slide and Stage 7 deployment timing across process, learning and requirements.')

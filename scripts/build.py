@@ -16,7 +16,9 @@ from reference import STAGES, TERMS, TERM_TITLES, TERM_EXAMPLES, DEFINITION_TEXT
 from process_updates import system, EXTRA_DEFINITIONS
 from admin_views import permissions_page
 from enablement_updates import apply, STREAMS, STREAM_OVERVIEWS
+from deployment_updates import learning as apply_deployment_timing
 apply(MODULES, DESIGN, CAVEATS, TERM_TITLES, DEFINITION_TEXT, DEFINITION_EXAMPLES)
+apply_deployment_timing(MODULES, DESIGN, DEFINITION_TEXT, DEFINITION_EXAMPLES, STAGES)
 E=lambda s:html.escape(str(s),quote=True)
 M={m['id']:m for m in MODULES}
 S={s[0]:s for s in STAGES}
