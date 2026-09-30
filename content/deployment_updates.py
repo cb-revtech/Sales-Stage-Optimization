@@ -19,16 +19,16 @@ def slide_fields(page):
     keep = [
         {'Opportunity Name', 'Type', 'Amount · Close Date', 'Opportunity Source', 'Opportunity Owner'},
         {'CHAMPS: Challenge, Authority, Money, Priority, Stack / Storage'},
-        {'CHAMPS: Challenge, Authority, Money, Priority, Stack / Storage', 'Use Case', 'Additional Use Case Information', 'Route to Market', 'Indirect Route Type', 'Opportunity Contact Roles (at least one)', 'Pipeline Date · Entry Amount'},
+        {'CHAMPS: Challenge, Authority, Money, Priority, Stack / Storage', 'Use Case', 'Additional Use Case Information', 'Route to Market', 'Opportunity Contact Roles (at least one)'},
         {'Identify Pain', 'Competitors', 'Technical Value', 'Champion', 'Decision Criteria', 'Description'},
         {'Technical Outcome', 'Technical Value', 'Operational Value', 'Economic Buyer', 'Decision Process'},
         {'Business Value', 'Primary Quote', 'Paper Process', 'Requested Install Date'},
         {'Estimated Shipping Date', 'Requested Delivery Date', 'IPG Finalized', 'PO Secured', 'PO Attachment', 'Final Agreements Received'},
-        {'Order Review Status', 'Products · Amount', 'Attachments · Delivery Notes', 'Contact Roles', 'Won Reason', 'Business Value · win reason detail'},
-        None, None, None,
+        {'Order Review Status', 'Products · Amount', 'Won Reason', 'Business Value · win reason detail'},
+        None, None, {'Closed Lost · Close Date', 'Loss Reason', 'Loss Reason Details', 'Lost — Next Step Recommendation'},
     ]
     item_pattern = r'(?:<a href="[^"]+">)?<span\b[^>]*>.*?</span>(?:</a>)?'
-    for i in range(8):
+    for i in list(range(8)) + [10]:
         items = re.findall(item_pattern, cells[i], re.S)
         assert items and ''.join(items) == cells[i][len('<td class="slide-fields">'):-len('</td>')], i
         selected = []
@@ -38,9 +38,9 @@ def slide_fields(page):
                 continue
             if i == 0 and label == 'Amount · Close Date':
                 item = item.replace('Amount · Close Date', 'Amount')
-            if i == 2 and label == 'Pipeline Date · Entry Amount':
-                item = re.sub(r' title="[^"]*"', '', item)
-                item = item.replace('Pipeline Date · Entry Amount', 'Pipeline Entry Amount')
+            if i == 7 and label == 'Business Value · win reason detail':
+                item = item.replace('Business Value · win reason detail', 'Win Reason Details')
+                item = item.replace('class="field-existing"', 'class="field-existing" title="Captured in Business Value"', 1)
             selected.append(item)
         assert len(selected) == len(keep[i]), (i, len(selected), len(keep[i]))
         cells[i] = '<td class="slide-fields">' + ''.join(selected) + '</td>'
