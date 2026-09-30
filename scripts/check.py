@@ -172,7 +172,9 @@ assert len(slide_cells)==11
 labels=[[html.unescape(re.sub(r'<[^>]+>','',item)) for item in re.findall(r'<span\b[^>]*>.*?</span>',cell,re.S)] for cell in slide_cells]
 assert labels[0]==['Opportunity Name','Type','Amount','Opportunity Source','Opportunity Owner']
 assert labels[1]==['CHAMPS: Challenge, Authority, Money, Priority, Stack / Storage']
-assert 'Pipeline Entry Amount' in labels[2] and not any('Pipeline Date' in x for x in labels[2])
+assert labels[2]==['CHAMPS: Challenge, Authority, Money, Priority, Stack / Storage','Use Case','Additional Use Case Information','Route to Market','Opportunity Contact Roles (at least one)']
+assert labels[7]==['Order Review Status','Products · Amount','Won Reason','Win Reason Details']
+assert labels[10]==['Closed Lost · Close Date','Loss Reason','Loss Reason Details','Lost — Next Step Recommendation']
 assert not any(x.startswith('Stage ') and x.endswith(' Date') for cell in labels[:8] for x in cell)
 assert not any('Deployment Case' in x for x in labels[7])
 assert 'Deployment Case Link' in labels[8] and 'Deployment Case Link' in labels[9]
