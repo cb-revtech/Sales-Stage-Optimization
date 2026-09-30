@@ -4,6 +4,7 @@ from change_log import change_log
 import sales_ops_updates as sales_ops
 import audit_updates as audit
 from requirement_summaries import simplify
+import deployment_updates as deployment
 E=lambda s:html.escape(str(s),quote=True)
 APPROVED=[1,2,3,4,5,7,8,9,10,11,13,14,23,24,26,29,30,31,32,33,34]
 EXCLUDED=[6,12,15,16,17,18,19,20,21,22,25,27,28,35,36]
@@ -177,6 +178,7 @@ def system(base):
  s=within(s,'s1',lambda x:x.replace('</tbody>', ''.join('<tr data-field="'+E(n)+'"><td><strong>'+E(n)+'</strong><small>'+E(t)+'</small></td><td>System-maintained</td><td>First qualified pipeline entry</td><td>New field</td><td>'+E('Stamp once at first valid entry to any numbered Stage 1–8, including allowed direct Stage 1 creation and permitted skips. Capture date/time and Amount with currency on the same event. Preserve on regression, re-entry and later quote changes; current Amount and actual-stage dates remain separate.')+'</td></tr>' for n,t in [('Pipeline Date','Date/Time'),('Pipeline Entry Amount','Currency + currency context')])+'</tbody>',1))
  s=sales_ops.system(s,within,auto,activity_register)
  s=audit.system(s,within,auto)
+ s=deployment.system(s,within)
  # New change log and complete CSV parity.
  data=json.loads(re.search(r'<script[^>]*id="requirements-data"[^>]*>(.*?)</script>',s,re.S)[1])
  for i,(kind,title,req,accept,target,nums) in enumerate(CHANGES,115):
@@ -191,6 +193,7 @@ def system(base):
   if n in refinements:row[10]+=' '+refinements[n]
  data=sales_ops.requirements(data)
  data=audit.requirements(data)
+ data=deployment.requirements(data)
  start=s.index('<section class="stage" id="implementation-requirements">')
  end=s.index('<script id="requirements-data"',start)
  # Keep the detailed action log intact; summarize only the requirements table/export.
