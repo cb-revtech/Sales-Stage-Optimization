@@ -54,7 +54,14 @@ for id in ['ongoing-meetings-detail','account-management','change-log']:assert i
 # The restored table, CSV and canonical data must agree; every requirement must be represented in the collapsed action log.
 data=json.loads(re.search(r'<script[^>]*id="requirements-data"[^>]*>(.*?)</script>',index,re.S)[1])
 with (ROOT/'downloads/implementation-requirements.csv').open(encoding='utf-8-sig',newline='') as f:
-    assert list(csv.reader(f))==data,'Export differs from canonical requirements'
+    exported=list(csv.reader(f))
+assert exported[0]==['October 19 change','Net change','Change date','Decision status']+data[0][:11]
+assert len(exported)==len(data)
+for row,source in zip(exported[1:],data[1:]):
+    assert row[4:]==source[:11], 'CSV requirement content differs from table'
+    assert row[1:4]==[source[14],source[12],source[13]], 'CSV change detail differs from table'
+    assert row[0]=={'Added':'New','Revised':'Revised','Existing':'Unchanged'}[source[11]]
+assert {row[0] for row in exported[1:]}=={'New','Revised','Unchanged'}
 ids=re.findall(r'data-requirement="([^"]+)"',index)
 assert len(ids)==len(set(ids))==len(data)-1 and set(ids)=={r[1] for r in data[1:]},'Changelog coverage'
 table=re.search(r'<table id="requirements-table">(.*?)</table>',index,re.S)[1]
@@ -207,7 +214,9 @@ for n in SUMMARIES:
         assert row[11:14]==['Existing','','Existing baseline']
         assert [row[3],row[8],row[10]]==list(SUMMARIES[n]),f'Unlabeled baseline change {n}'
 with (ROOT/'downloads/october-19-requirements.csv').open(encoding='utf-8-sig',newline='') as f:
-    assert list(csv.reader(f))==[data[0]]+[r for r in data[1:] if r[12]==DATE]
+    changes_export=list(csv.reader(f))
+assert changes_export==[exported[0]]+[r for r in exported[1:] if r[2]==DATE]
+assert {row[0] for row in changes_export[1:]}=={'New','Revised'}
 assert f'<details class="audit-group change-group release-group" id="changes-2026-10-19"><summary>{TITLE}' in index
 assert 'BR-SS-149' not in by_id and 'BR-SS-151' not in by_id, 'Withdrawn proposals must not appear in current scope'
 assert by_id['BR-SS-150'][13]=='Confirmed'

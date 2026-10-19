@@ -127,6 +127,13 @@ def requirements(data):
         else: row += ['Existing','','Existing baseline','No October 19 scope change.']
     return result
 
+def csv_requirements(data):
+    """Lead with readable change labels; preserve every canonical requirement column."""
+    labels={'Added':'New','Revised':'Revised','Existing':'Unchanged'}
+    return [['October 19 change','Net change','Change date','Decision status']+data[0][:11]]+[
+        [labels[row[11]],row[14],row[12],row[13]]+row[:11] for row in data[1:]
+    ]
+
 def field(name,kind,inputs,purpose,previous='Existing capture / reuse to confirm',change='Revised · 19 Oct'):
     return '<tr data-field="'+E(name)+'"><td><strong>'+E(name)+'</strong><small>'+E(kind)+'</small></td><td>'+E(inputs)+'</td><td>'+E(previous)+'</td><td><span class="change-tag">'+E(change)+'</span></td><td>'+E(purpose)+'</td></tr>'
 
@@ -313,7 +320,7 @@ def row_class(row):
     return 'release-pending' if row[13]=='Pending' else ('release-'+row[11].lower())
 
 def toolbar():
-    return '<div class="release-tools"><p><strong>October 19 changes:</strong> <span class="release-key release-added">Added</span> <span class="release-key release-revised">Revised</span>. Unshaded rows are existing scope. Color is reinforced by the change/status columns.</p><label for="requirement-release-filter">Show requirements </label><select id="requirement-release-filter"><option value="all">All requirements</option><option value="latest">October 19 additions and revisions</option><option value="added">Added October 19</option><option value="revised">Revised October 19</option></select><p id="requirement-release-count" role="status" aria-live="polite"></p><p><a href="downloads/october-19-requirements.csv" download="GTM-October-19-Requirements.csv">Download October 19 changes only (CSV)</a></p><p>CSV has no color formatting; both downloads include Change type, Change date, Decision status and Net change columns.</p></div>'
+    return '<div class="release-tools"><p><strong>October 19 changes:</strong> <span class="release-key release-added">Added</span> <span class="release-key release-revised">Revised</span>. Unshaded rows are existing scope. Color is reinforced by the change/status columns.</p><label for="requirement-release-filter">Show requirements </label><select id="requirement-release-filter"><option value="all">All requirements</option><option value="latest">October 19 additions and revisions</option><option value="added">Added October 19</option><option value="revised">Revised October 19</option></select><p id="requirement-release-count" role="status" aria-live="polite"></p><p><a href="downloads/october-19-requirements.csv" download="GTM-October-19-Requirements.csv">Download October 19 changes only (CSV)</a></p><p>Both CSV downloads start with <strong>October 19 change</strong>: <strong>New</strong>, <strong>Revised</strong> or <strong>Unchanged</strong>. The next column, <strong>Net change</strong>, explains the change. Filter the first column to review changes without relying on color.</p></div>'
 
 def assets(page):
     return page.replace('</head>','<link rel="stylesheet" href="assets/october.css"><script src="assets/october.js" defer></script></head>',1)
