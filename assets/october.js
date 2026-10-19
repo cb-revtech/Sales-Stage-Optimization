@@ -9,7 +9,6 @@
       const type = row.dataset.releaseType;
       const match = select.value === 'all' ||
         (select.value === 'latest' && type !== 'existing') ||
-        (select.value === 'pending' && row.dataset.releaseStatus === 'pending') ||
         (['added', 'revised'].includes(select.value) && type === select.value);
       row.hidden = !match;
       if (match) shown++;
