@@ -133,7 +133,8 @@ assert 'except Stage 0 misqualification' in by_id['BR-SS-034'][8]
 assert 'Stage 4 Date' in by_id['BR-SS-116'][8]
 assert 'Required at loss; align vendor choices' not in index
 assert 'Require Loss Reason, Loss Reason Details, Competitor Lost To and' not in index
-for name in ['Requested Delivery Date','Estimated Shipping Date','Next Step Reviewed At','SE Next Step Reviewed At']:
+# October 19 explicitly resolves software-only applicability for logistics dates.
+for name in ['Next Step Reviewed At','SE Next Step Reviewed At']:
     assert field_rows(base,name)==field_rows(index,name),f'Rejected change altered {name}'
 for phrase in ['Advanced Stage Date','Invoice Status','Meeting Start','Meeting End']:
     assert phrase not in index,phrase
@@ -173,7 +174,7 @@ labels=[[html.unescape(re.sub(r'<[^>]+>','',item)) for item in re.findall(r'<spa
 assert labels[0]==['Opportunity Name','Type','Amount','Opportunity Source','Opportunity Owner']
 assert labels[1]==['CHAMPS: Challenge, Authority, Money, Priority, Stack / Storage']
 assert labels[2]==['CHAMPS: Challenge, Authority, Money, Priority, Stack / Storage','Use Case','Additional Use Case Information','Route to Market','Opportunity Contact Roles (at least one)']
-assert labels[7]==['Order Review Status','Products · Amount','Won Reason','Win Reason Details']
+assert labels[7]==['Order Review Status','Products · Amount','Won Reason','Win Reason Details','OM Reviewer · In Progress','Rejection notes · if rejected']
 assert labels[10]==['Closed Lost · Close Date','Loss Reason','Loss Reason Details','Lost — Next Step Recommendation']
 assert not any(x.startswith('Stage ') and x.endswith(' Date') for cell in labels[:8] for x in cell)
 assert not any('Deployment Case' in x for x in labels[7])
@@ -189,3 +190,47 @@ assert 'Stage 7' in by_id['BR-SS-017'][3] and 'Stage 7' in by_id['BR-SS-069'][8]
 assert 'from Stage 7' in by_id['BR-SS-061'][8]
 assert 'Create or link one coordinating Case on entry to Stage 7.' in (ROOT/'enablement.html').read_text()
 print('PASS: simplified slide and Stage 7 deployment timing across process, learning and requirements.')
+
+# October 19 release: net changes, pending boundaries and all exports share one source.
+from october_updates import REVISED, NEW, DATE, TITLE
+from requirement_summaries import SUMMARIES
+expected_existing={f'BR-SS-{n:03}' for n in SUMMARIES}
+expected_new={f'BR-SS-{n:03}' for n,*_ in NEW}
+assert set(by_id)==expected_existing|expected_new
+assert data[0][-4:]==['Change type','Change date','Decision status','Net change']
+for n in SUMMARIES:
+    row=by_id[f'BR-SS-{n:03}']
+    if n in REVISED:
+        assert row[11:14]==['Revised',DATE,'Confirmed']
+        assert [row[3],row[8],row[10]]==list(REVISED[n][:3])
+    else:
+        assert row[11:14]==['Existing','','Existing baseline']
+        assert [row[3],row[8],row[10]]==list(SUMMARIES[n]),f'Unlabeled baseline change {n}'
+with (ROOT/'downloads/october-19-requirements.csv').open(encoding='utf-8-sig',newline='') as f:
+    assert list(csv.reader(f))==[data[0]]+[r for r in data[1:] if r[12]==DATE]
+assert f'<details class="audit-group change-group release-group" id="changes-2026-10-19"><summary>{TITLE}' in index
+for n in [149,150,151]:
+    row=by_id[f'BR-SS-{n:03}'];assert row[13]=='Pending' and row[6]=='Pending decision'
+    assert f'data-requirement="{row[1]}" class="release-pending"' in index
+assert 'id="s8"' in index, 'Pending Stage 8 removal must not be implemented'
+assert 'NVIDIA Engagement · entry to 2' in labels[3]
+assert 'Technical Decision Maker' in labels[4] and 'Decision Maker' in labels[5]
+assert 'Customer Commitment Files' in labels[6] and 'Approved final Primary Quote' in labels[6]
+for stale in ['a real attached PO', 'A random attachment does not satisfy the PO requirement',
+              'not a universal stage gate', 'Existing relevance and status validation remains',
+              'New Business, Existing Business and Renewal',
+              'Remove the standalone prompt; retain contact roles',
+              'Exclude the separate narrative prompt; retain Opportunity Contact Roles']:
+    assert stale not in index, stale
+for name in ['GPU Type','GPU Quantity','Project Type']:
+    assert all('visible/editable' in r and 'Opportunity summary' in r for r in field_rows(index,name))
+assert 'Approval alone is not completion' in index
+assert 'System Administrator after lock' in permissions
+assert 'Opportunity team and RevOps' in permissions
+assert 'Booking an Order: full process reference' in (ROOT/'enablement.html').read_text()
+assert 'Customer Commitment Document' in (ROOT/'definitions.html').read_text()
+assert 'id="booking-an-order"' in index and 'id="requirement-release-filter"' in index
+print(f'PASS: October 19 — {len(REVISED)} revised + {len(NEW)} added rows, 3 pending decisions; full/changes CSV parity and stage/permission guards.')
+
+for page in ['enablement.html','definitions.html']:
+    assert 'New Business, Existing Business and Renewal' not in (ROOT/page).read_text()

@@ -5,6 +5,7 @@ import sales_ops_updates as sales_ops
 import audit_updates as audit
 from requirement_summaries import simplify
 import deployment_updates as deployment
+import october_updates as october
 E=lambda s:html.escape(str(s),quote=True)
 APPROVED=[1,2,3,4,5,7,8,9,10,11,13,14,23,24,26,29,30,31,32,33,34]
 EXCLUDED=[6,12,15,16,17,18,19,20,21,22,25,27,28,35,36]
@@ -179,6 +180,7 @@ def system(base):
  s=sales_ops.system(s,within,auto,activity_register)
  s=audit.system(s,within,auto)
  s=deployment.system(s,within)
+ s=october.system(s)
  # New change log and complete CSV parity.
  data=json.loads(re.search(r'<script[^>]*id="requirements-data"[^>]*>(.*?)</script>',s,re.S)[1])
  for i,(kind,title,req,accept,target,nums) in enumerate(CHANGES,115):
@@ -197,17 +199,19 @@ def system(base):
  start=s.index('<section class="stage" id="implementation-requirements">')
  end=s.index('<script id="requirements-data"',start)
  # Keep the detailed action log intact; summarize only the requirements table/export.
- action_log=change_log(data,s[:start],ACCOUNT_ROWS)
- data=simplify(data)
+ action_log=october.normalize(change_log(october.revise(data),s[:start],ACCOUNT_ROWS))
+ data=october.requirements(simplify(data))
+ action_log=action_log.replace('<div class="body">','<div class="body">'+october.release_log(data),1)
  # Restore the original card and scrollable table with the current complete data.
  requirements=s[start:end]
  requirements=requirements.replace('<button type="button" id="download-requirements">Download requirements CSV</button>', '<a id="download-requirements" href="downloads/implementation-requirements.csv" download="GTM-Implementation-Requirements.csv">Download requirements CSV</a>')
- register='<table id="requirements-table"><thead><tr>'+''.join('<th scope="col">'+E(x)+'</th>' for x in data[0])+'</tr></thead><tbody>'+''.join('<tr id="requirement-'+row[1]+'" data-requirement="'+row[1]+'">'+''.join('<td>'+E(c)+'</td>' for c in row)+'</tr>' for row in data[1:])+'</tbody></table>'
+ register='<table id="requirements-table"><thead><tr>'+''.join('<th scope="col">'+E(x)+'</th>' for x in data[0])+'</tr></thead><tbody>'+''.join('<tr id="requirement-'+row[1]+'" data-requirement="'+row[1]+'" class="'+october.row_class(row)+'" data-release-type="'+row[11].lower()+'" data-release-status="'+row[13].lower()+'">'+''.join('<td>'+E(c)+'</td>' for c in row)+'</tr>' for row in data[1:])+'</tbody></table>'
  requirements=re.sub(r'<table id="requirements-table">.*?</table>',lambda m:register,requirements,count=1,flags=re.S)
+ requirements=requirements.replace('<div class="body">','<div class="body">'+october.toolbar(),1)
  s=s[:start]+action_log+requirements+s[end:]
  s=re.sub(r'<script>document.getElementById\("download-requirements"\).*?</script>','',s,flags=re.S)
  s=re.sub(r'(<script[^>]*id="requirements-data"[^>]*>).*?(</script>)',lambda m:m[1]+json.dumps(data,ensure_ascii=False).replace('</','<\\/')+m[2],s,count=1,flags=re.S)
- return s
+ return october.assets(s)
 
 ROLE_ROWS=[
  ('Sales','Owned opportunities/accounts and explicitly shared deal teams.','Qualification, customer meetings, buying roles, commercial next steps, Route to Market, Account Tier and stage requests after gates pass.','No accepted partner-source rewrite; no system forecast/snapshot edit, approval-by-membership or OM booking right.'),

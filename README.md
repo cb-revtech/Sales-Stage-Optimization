@@ -46,3 +46,14 @@ See `audit-review.md` for findings, verification and the remaining implementatio
 ## September 30 update
 
 `content/deployment_updates.py` shortens only the one-slide field lists; the detailed field register retains those inputs. The coordinating deployment Case now starts on the authorized Stage 6 → 7 booking transition, covers Stages 7–8 and continues afterward. Stage 6 prepares the OM/GSS logistics handoff. The build applies this timing to the stage details, ongoing activity, definitions, enablement, change log and requirements export.
+
+
+## October 19 consolidated review
+
+`content/october_updates.py` applies the confirmed October 19 refinements after the earlier approved updates. It updates stages and field registers, the one-slide summary, partner-flow examples, Booking an Order reference guidance, definitions, existing enablement lessons and permission controls. The original `content/system-base.html` remains the historical baseline. These changes specify target behavior; they do not configure Salesforce.
+
+The change log includes a collapsed **New requirements as of Monday, October 19th** release group. Existing BR IDs are preserved. The implementation table distinguishes Added (green), Revised (blue), Pending (amber) and unchanged Existing rows, with a release filter. `Change type`, `Change date`, `Decision status` and `Net change` columns are shared with both `downloads/implementation-requirements.csv` and the October-only `downloads/october-19-requirements.csv`. CSV cannot encode cell colors. Pending proposals are included for scoping but are not active gates.
+
+The release has 24 revised existing rows and 19 added rows, including three pending decision rows. Stage 8 remains active pending review. Detailed replacement partner-credit rules and remaining mappings/bypass/history choices remain pending; confirmed multi-partner reporting, transaction-chain and bill-to requirements are incorporated. Booking-policy content is process reference except for the specifically approved system requirements. The supplied policy has draft/version placeholders; do not treat the website as the controlled policy or publish the source Word document.
+
+Run `python3 scripts/build.py` and `python3 scripts/check.py`. The checks include CSV/table parity, release metadata, unchanged-baseline summary guards, unique IDs/links, pending boundaries, contract-only commitments, NVIDIA visibility and stage placements. Browser review also verifies release filtering, deep-link visibility, collapsed change log, responsive layout and downloads.
