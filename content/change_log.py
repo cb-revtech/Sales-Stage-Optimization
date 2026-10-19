@@ -15,8 +15,12 @@ EXPLICIT={
  'validation':[3,4,5,6,7,9,10,11,23,25,34,104,122,123]}
 RENAME_FROM={43:'Why DDN',44:'SE User',45:'Solution',47:'Economic Justification',48:'Procurement (Close Plan)',49:'Sharepoint Links',50:'IPG Finalized and submitted',51:'SE Next Steps',52:'Budget holder',56:'PO Processing Status',67:'Order No.',68:'Invoice #',69:'PS Case',72:'Primary Partner',77:'Partner',79:'Description (Influence)',80:'Partner Stage (Influence)',81:'Primary Contact (Partner)',82:'Technical Contact (Partner)',89:'Reason Lost',90:'Lost Reason Explanation',91:'If Primary Competition is Other, Fill:'}
 LABELS={43:'Identify Pain',44:'Primary SE',45:'Technical Value',47:'Business Value',48:'Paper Process',49:'SharePoint Link',50:'IPG Finalized',51:'Sales Engineer Next Steps',52:'Economic Buyer',56:'Order Review Status',67:'Sales Order Reference',68:'Invoice Reference',69:'Deployment Case Link',72:'Transacting Partner',77:'Associated Account',79:'Association Description / Plan',80:'Association Engagement Status',81:'Association Sales Contact',82:'Association Technical Contact',89:'Loss Reason',90:'Loss Reason Details',91:'Competitor Detail (if Other)'}
+LABELS.update({54:'Estimated Shipping Date',55:'Requested Delivery Date',74:'POC Approved',86:'OK to Interview (Win/Loss)?',87:'Contact for Win/Loss Interview',88:'WL Reason Cannot Approach',100:'Role On Deal'})
+
 def category(row):
  n=int(row[1].split('-')[-1]);req=row[3]
+ if n in {54,55,74,86,87,88}:return 'fields'
+ if n==100:return 'inputs'
  for key,ids in EXPLICIT.items():
   if n in ids:return key
  if n in LABELS or req.startswith(('Change the existing field label','Relabel','Reuse/relabel')):return 'rename'
@@ -37,7 +41,7 @@ def title(row):
 # A requirement can describe several fields; field subrequirements and umbrella
 # requirements share the same display row instead of duplicating the field.
 FIELD_REQUIREMENTS={
- 8:['POC Status','POC Updates'],18:['Value Tracking Start Date','Value Realization Plan','Target Value Realization Date','Value Achieved?','Value Realization Context','Value Outcome Confirmed Date'],
+ 8:['POC Approved','POC Updates'],18:['Value Tracking Start Date','Value Realization Plan','Target Value Realization Date','Value Achieved?','Value Realization Context','Value Outcome Confirmed Date'],
  30:['Transacting Partner'],37:['Route to Market','Indirect Route Type'],41:['Primary GSS'],
  110:['Opportunity Conversion Lifecycle'],112:['Quote Purpose'],113:['Timing Urgency','Urgency Reason'],114:['Competitor Pricing'],
  115:['Account · Account Tier','Account · RevOps Notes','Account · Primary DDN Partner Account Manager','Account · Partner Technical Lead','Account · Partner Admin Contact'],
@@ -59,7 +63,7 @@ CONTROLS={
  7:('Identify Pain, Competitors, Technical Value, Champion, Decision Criteria, SharePoint Link, Description, POC decision','Existing technical-fit evidence and POC engagement.'),
  9:('Technical Outcome, selected configuration, Operational Value, Economic Buyer, Decision Process','Existing technical evaluation and buyer evidence.'),
  10:('Business Value, Primary Quote, Paper Process, Requested Install Date','Existing proposal evidence and CPQ-driven Amount / Products.'),
- 11:('IPG, PO Secured, PO File, final agreements, shipping / delivery requests','Existing procurement and file capture; confirm mapped controls.'),
+ 11:('IPG, customer commitment PO/contract Files, final Primary Quote, shipping / delivery requests','Existing procurement and file capture; confirm mapped controls.'),
  13:('Order Review Status, Order, OM / GSS logistics handoff','Existing order reconciliation and OM booking authority.'),
  15:('Verified receipt for all in-scope items; Order / Case evidence','Existing Order delivery and invoice facts are distinct.'),
  17:('Stage 7; existing PS Case and Order Case(WO) relationships','Existing Case structures support deployment work.'),
@@ -67,7 +71,7 @@ CONTROLS={
  20:('Case title, description, Opportunity link; Stage 2–5','Existing technical-risk fields and Case infrastructure.'),
  21:('Account, Opportunity, role, classification, plan and contacts','Partner Opportunity Influence currently records partner participation.'),
  22:('First qualifying association / registration; creation owner; booking event','Existing contribution logic and management override history.'),
- 23:('Active NVIDIA association; NVIDIA Engagement / Status','Existing NVIDIA engagement fields on Opportunity.'),
+ 23:('Stage 2 NVIDIA Engagement; conditional contacts, GPU Type, GPU Quantity and Project Type','Existing NVIDIA engagement fields on Opportunity.'),
  24:('Won Reason, Business Value, incumbent, recognition and interview inputs','Existing Win/Loss rollout; verify delivered fields and notifications.'),
  27:('Approved field labels, choice crosswalks, record types and dependent integrations','Existing historical records and downstream consumers use current metadata.'),
  28:('Approved requirements; allowed and denied UI / import / integration scenarios','Existing stages, CPQ, integrations and reporting need regression coverage.'),
@@ -145,7 +149,7 @@ def entries(data,source,account_rows):
     add(key,name,cells,n)
   else:
    if n==39:
-    inputs='Retain the existing Product Type choices; allow multiple selections.';current='Existing single-select Opportunity Product Type.'
+    inputs='Multi-select initially; derive from Opportunity Products; rename 1P Google to Managed Lustre.';current='Existing single-select Opportunity Product Type.'
    elif n==25:
     inputs='Loss Reason, details, competitor, next action and conditional interview capture';current='Existing loss fields and Win/Loss review process.'
    else:

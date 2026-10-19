@@ -15,10 +15,17 @@ from course_design import DESIGN, CAVEATS
 from reference import STAGES, TERMS, TERM_TITLES, TERM_EXAMPLES, DEFINITION_TEXT, DEFINITION_EXAMPLES
 from process_updates import system, EXTRA_DEFINITIONS
 from admin_views import permissions_page
+import admin_views
+import october_updates as october
 from enablement_updates import apply, STREAMS, STREAM_OVERVIEWS
 from deployment_updates import learning as apply_deployment_timing
 apply(MODULES, DESIGN, CAVEATS, TERM_TITLES, DEFINITION_TEXT, DEFINITION_EXAMPLES)
 apply_deployment_timing(MODULES, DESIGN, DEFINITION_TEXT, DEFINITION_EXAMPLES, STAGES)
+october.learning(MODULES, DESIGN, DEFINITION_TEXT, DEFINITION_EXAMPLES, STAGES)
+october.permissions_config(admin_views)
+CAVEATS.update({key:october.normalize(value) for key,value in CAVEATS.items()})
+CAVEATS['booking']='Use the approved two-tier Order Review Status model and map historical values. A review status or validation bypass does not replace required booking-policy approvals.'
+EXTRA_DEFINITIONS += october.EXTRA_DEFINITIONS
 E=lambda s:html.escape(str(s),quote=True)
 M={m['id']:m for m in MODULES}
 S={s[0]:s for s in STAGES}
@@ -58,6 +65,8 @@ def course(m):
     out+=f'<section class="practice" aria-labelledby="{id}-practice"><h3 id="{id}-practice">Put it into practice</h3><p>{E(d["practice"])}</p><details class="answer worked-answer"><summary>Compare your answer</summary><p>{E(d["model"])}</p></details></section>'
     out+=f'<section class="knowledge-check" aria-labelledby="{id}-check"><h3 id="{id}-check">Knowledge check</h3><p>{E(d["question"])}</p><details class="answer"><summary>Show answer and why</summary><p>{E(d["answer"])}</p></details></section>'
     out+=f'<div class="takeaway"><h3>Use this on your next deal</h3><p>{E(d["takeaway"])}</p></div></div></details></div></article>'
+    if id=='booking':out=out.replace('</div></details></div></article>','<p><a href="index.html#booking-an-order">Booking an Order: full process reference</a></p></div></details></div></article>')
+    if id=='partner-accounts':out=out.replace('</div></details></div></article>','<p><a href="index.html#ongoing-partners-detail">Partner-flow examples and pending credit design</a></p></div></details></div></article>')
     return out
 
 entries=[]
@@ -78,6 +87,10 @@ for title,mid,meaning,example in EXTRA_DEFINITIONS:
     if not any(e['id']==id for e in entries):entries.append(dict(id=id,title=title,meaning=meaning,module=module,example=example))
     DEFINITION_TEXT[id]=meaning
     if example:DEFINITION_EXAMPLES[id]=example
+for entry in entries:
+    if entry['id']=='term-po-secured-po-attachment':entry['title']='Customer commitment files (PO / contract)'
+    if entry['id']=='term-poc-status':entry['title']='POC completion evidence (legacy status mapping)'
+    if entry['id']=='term-nvidia-engagement-status':entry['title']='NVIDIA Engagement Status (legacy mapping)'
 entries.sort(key=lambda e:e['title'].casefold())
 assert len({e['id'] for e in entries})==len(entries)
 
@@ -120,5 +133,7 @@ requirements=json.loads(re.search(r'<script[^>]*id="requirements-data"[^>]*>(.*?
 (ROOT/'downloads').mkdir(exist_ok=True)
 with (ROOT/'downloads/implementation-requirements.csv').open('w',encoding='utf-8-sig',newline='') as output:
     csv.writer(output).writerows(requirements)
+with (ROOT/'downloads/october-19-requirements.csv').open('w',encoding='utf-8-sig',newline='') as output:
+    csv.writer(output).writerows([requirements[0]]+[row for row in requirements[1:] if row[12]==october.DATE])
 (ROOT/'permissions.html').write_text(permissions_page(header))
 print(f'Built 4 courses with {len(MODULES)} lessons and {len(entries)} definitions. Approved process updates and role permissions applied.')
