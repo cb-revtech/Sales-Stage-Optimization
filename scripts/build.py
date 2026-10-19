@@ -132,8 +132,8 @@ p.write_text(text)
 requirements=json.loads(re.search(r'<script[^>]*id="requirements-data"[^>]*>(.*?)</script>',text,re.S)[1])
 (ROOT/'downloads').mkdir(exist_ok=True)
 with (ROOT/'downloads/implementation-requirements.csv').open('w',encoding='utf-8-sig',newline='') as output:
-    csv.writer(output).writerows(requirements)
+    csv.writer(output).writerows(october.csv_requirements(requirements))
 with (ROOT/'downloads/october-19-requirements.csv').open('w',encoding='utf-8-sig',newline='') as output:
-    csv.writer(output).writerows([requirements[0]]+[row for row in requirements[1:] if row[12]==october.DATE])
+    csv.writer(output).writerows(october.csv_requirements([requirements[0]]+[row for row in requirements[1:] if row[12]==october.DATE]))
 (ROOT/'permissions.html').write_text(permissions_page(header))
 print(f'Built 4 courses with {len(MODULES)} lessons and {len(entries)} definitions. Approved process updates and role permissions applied.')
