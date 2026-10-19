@@ -209,12 +209,38 @@ for n in SUMMARIES:
 with (ROOT/'downloads/october-19-requirements.csv').open(encoding='utf-8-sig',newline='') as f:
     assert list(csv.reader(f))==[data[0]]+[r for r in data[1:] if r[12]==DATE]
 assert f'<details class="audit-group change-group release-group" id="changes-2026-10-19"><summary>{TITLE}' in index
-for n in [149,150,151]:
-    row=by_id[f'BR-SS-{n:03}'];assert row[13]=='Pending' and row[6]=='Pending decision'
-    assert f'data-requirement="{row[1]}" class="release-pending"' in index
-assert 'id="s8"' in index, 'Pending Stage 8 removal must not be implemented'
+assert 'BR-SS-149' not in by_id and 'BR-SS-151' not in by_id, 'Withdrawn proposals must not appear in current scope'
+assert by_id['BR-SS-150'][13]=='Confirmed'
+assert not any(r[13]=='Pending' for r in data[1:]), 'October business decisions are resolved'
+assert '<option value="pending">' not in index
+assert 'id="s8"' in index, 'Existing Stage 8 remains unchanged'
+def stage_section(id):
+    return index.split('id="'+id+'"',1)[1].split('</section>',1)[0]
+def stage_gate(id):
+    return re.search(r'<div class="stage-gate">.*?</div>',stage_section(id),re.S)[0]
+assert 'Technical Decision Maker' not in stage_gate('s2')
+assert 'Technical Decision Maker Salesforce Contact' in stage_gate('s3')
+assert 'before exiting Stage 3 to Stage 4' in stage_gate('s3')
+assert 'Select a Decision Maker Salesforce Contact' in stage_gate('s4')
+assert 'before exiting Stage 4 to Stage 5' in stage_gate('s4')
+assert 'matching Opportunity Contact Role' in by_id['BR-SS-133'][8]
+assert 'stage skips' in by_id['BR-SS-133'][8]
+assert 'Open-ended long text' in field_rows(index,'POC Completion Evidence')[0]
+assert len(field_rows(index,'POC Completion Evidence'))==2
+assert 'exactly one contribution category per partner' in by_id['BR-SS-150'][8]
+assert 'At most one partner may receive Sourced credit' in by_id['BR-SS-150'][8]
+assert 'remainder of 2026' in by_id['BR-SS-150'][8]
+assert 'System Administrator discretion' in permissions
+for page in ['index.html','definitions.html','enablement.html','permissions.html']:
+    contents=(ROOT/page).read_text()
+    for stale in ['Stage 8 removal', 'removal proposal is pending', 'renewal attribution inheritance',
+                  'split-source credit separately', 'hardware exceptions remain pending',
+                  'completion storage mapping remains pending', 'storage mapping is pending',
+                  'final storage mapping remains pending', 'Historical Opportunity Source crosswalk',
+                  'Remaining implementation decisions', 'Per-partner Sourced/Influenced/Fulfilled and timing rules are pending']:
+        assert stale not in contents, (page,stale)
 assert 'NVIDIA Engagement · entry to 2' in labels[3]
-assert 'Technical Decision Maker' in labels[4] and 'Decision Maker' in labels[5]
+assert 'Technical Decision Maker · exit 3' in labels[4] and 'Decision Maker · exit 4' in labels[5]
 assert 'Customer Commitment Files' in labels[6] and 'Approved final Primary Quote' in labels[6]
 for stale in ['a real attached PO', 'A random attachment does not satisfy the PO requirement',
               'not a universal stage gate', 'Existing relevance and status validation remains',
@@ -230,7 +256,7 @@ assert 'Opportunity team and RevOps' in permissions
 assert 'Booking an Order: full process reference' in (ROOT/'enablement.html').read_text()
 assert 'Customer Commitment Document' in (ROOT/'definitions.html').read_text()
 assert 'id="booking-an-order"' in index and 'id="requirement-release-filter"' in index
-print(f'PASS: October 19 — {len(REVISED)} revised + {len(NEW)} added rows, 3 pending decisions; full/changes CSV parity and stage/permission guards.')
+print(f'PASS: October 19 — {len(REVISED)} revised + {len(NEW)} added rows, resolved decisions; full/changes CSV parity and stage/permission guards.')
 
 for page in ['enablement.html','definitions.html']:
     assert 'New Business, Existing Business and Renewal' not in (ROOT/page).read_text()

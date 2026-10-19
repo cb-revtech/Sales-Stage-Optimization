@@ -1,4 +1,4 @@
-"""Approved October 19, 2026 net changes; pending designs are never active gates.
+"""Approved October 19, 2026 net changes and resolved business decisions.
 
 Existing BR IDs remain stable. Release metadata drives the log, table and CSV.
 """
@@ -15,7 +15,7 @@ NVIDIA = ('Require a NVIDIA Engagement dropdown selection on entry to Stage 2 an
           'Use the existing Associated accounts relationship for NVIDIA plans and next steps; an association is not the trigger for the new Stage 2 gate. No additional Amy approval is required.')
 POC = ('Replace the proposed POC Status presentation with POC Approved. Notify both the AE Manager and SE Manager to review; check POC Approved only after both approve, retaining approvers and approval times. '
        'Keep separate completion/cancellation evidence: when POC Required? is Yes, only documented Completed or Cancelled permits advancement beyond Stage 2, including skips. Approval alone is not completion. '
-       'Retain POC Required?, POC Engagement and POC Updates. The storage mapping for separate completion evidence is pending; do not remove the existing completion gate.')
+       'Retain POC Required?, POC Engagement and POC Updates. Use a separate open-ended long-text field, POC Completion Evidence, to document the Completed or Cancelled outcome and supporting evidence. Require that evidence before a required POC progresses beyond Stage 2; retain the existing completion gate.')
 COMMITMENT = ('Before leaving Stage 5, require an approved final quote marked Primary and matching customer commitment documents attached as Opportunity Files by Sales. '
               'A qualifying fully executed contract can satisfy the commitment without a PO unless the contract makes a PO a condition of the purchase obligation. A PO, contract or both must establish the binding commitment and match the approved Primary Quote. '
               'Prompt for the applicable file upload when the commitment is secured; replace PO-only requiredness and error messages so a valid contract-only submission can pass. Identify the governing quote and its matching documents; retain historical PO information.')
@@ -28,17 +28,17 @@ CLOSE_DATE = ('Order Management owns confirmation of Close Date. Lock it at Stag
               'Sales maintains expected timing while open through the existing forecasting process. Stage regression, delivery progression and integration updates must not bypass the booked Close Date lock. '
               'Close Date and the policy’s official Booking Date are distinct concepts; do not infer period eligibility from a stage change.')
 MEDIA = ('Capture Digital or Physical documentation/media fulfillment separately from IPG. Digital requires a fulfillment email. Prompt in Stage 4 and require completion before leaving Stage 5. Replace the existing booking question rather than duplicating it.')
-LOGISTICS = ('Keep Estimated Shipping Date and Requested Delivery Date in Stage 5 where applicable. Software-only deals are exempt from hardware-specific delivery requests. Hardware-containing deals require IPG Completed, subject to confirmed hardware exceptions; software-only may use Not Required. Do not invent shipping dates for software.')
+LOGISTICS = ('Keep Estimated Shipping Date and Requested Delivery Date in Stage 5 where applicable. Software-only deals are exempt from hardware-specific delivery requests. Retain the existing hardware IPG disposition and exception behavior; software-only may use Not Required. Do not invent shipping dates for software.')
 TRANS = ('Transacting Partner is the expected DDN bill-to partner, captured before the order phase and reconciled against the final quote/order. That partner must also be represented in Associated accounts. '
          'Keep the existing Primary Partner → Transacting Partner rename dependency: replace the single-partner credit trigger first. Transacting Partner changes do not change Opportunity Source or erase other partner contributions.')
 PARTNERS = ('Extend the existing Opportunity Partner Opportunity Influence / Associated accounts mechanism; preserve Account-level relationships. Maintain one account–opportunity association with structured, reportable primary and additional roles and contribution evidence for each partner. '
             'Keep account classification separate from role. Record who transacts, who originated or influenced the deal, and the evidence, timing, contacts, plan and next action for each participant. '
             'Represent distributor → reseller/downstream partner → customer relationships without inventing a distributor on direct-reseller deals. For NCP/service-provider motions, distinguish the contracting buyer from known underlying customers and single-/multi-tenant delivery. '
             'The Opportunity Account follows the actual commercial motion; it is not automatically the ultimate end customer. Reports must show partner-level participation and deduplicate company pipeline/bookings by opportunity. '
-            'Existing source protection, booked-credit freeze, audited overrides and coverage permissions remain. Detailed replacement credit algorithms are pending; an association or registration alone does not prove sourcing.')
+            'Existing source protection, booked-credit freeze, audited overrides and coverage permissions remain. Each partner has only one contribution category on an opportunity, and at most one partner receives sourcing credit. An association or registration alone does not prove sourcing.')
 DEPLOY = ('Extend the existing Stage 7 coordinating deployment Case handoff: derive hardware/software/both from Opportunity Products and transfer it with applicable acceptance-testing requirements, support/start/end dates, logistics and licensing information. '
           'OM and GSS record confirmation that the in-scope delivery is on-site and working on the deployment Case. Keep receipt, working deployment, contractual acceptance and value realization distinct. '
-          'Record actual events when they occur; later deployment evidence must not delay booking. Reuse the existing Case on retry/re-entry. Stage 8 remains in the approved model while its removal proposal is pending.')
+          'Record actual events when they occur; later deployment evidence must not delay booking. Reuse the existing Case on retry/re-entry.')
 STATUS = ('Use Order Review Status with default New Order (no sub-status); In Progress / In Progress; Rejected / PO Rejected, Incomplete Stage Information, Both PO & Stage Information, or Other with Comments; '
           'Booked / Booked with no Exceptions, Booked with Booking Policy Exceptions, or Booked with Exceptional Approvals. Adapt PO rejection labels to cover the customer commitment document on contract-only orders. '
           'Map historical values into the two-tier model. A Booked label does not replace OM reconciliation or exception approval. Only the explicit rejection action returns 6 → 5; other status edits do not automatically change stages.')
@@ -46,28 +46,30 @@ HISTORY_STOP = ['Tracking Number', 'Invoice Date', 'Last Modified by Owner', 'AE
 HISTORY = ('Stop future field-history tracking for: '+', '.join(HISTORY_STOP)+'. Keep the fields and all history already recorded. '
            'Retain tracking for Amount, Close Date, Opportunity Owner, Opportunity Name, Opportunity Source, SAL Status and Primary Quote. Add Technical Outcome, Transacting Partner (existing Primary Partner field) and Territory; confirm the exact Territory field. '
            'Stop Forecast Category (Sales) tracking only after proving its changes remain accessible in reporting. Keep the existing AE Next Steps dated log; do not add history slots for Next Step or first-entry/pipeline/SAL timestamps. '
-           'Existing POC-update, route-change, override and Account/Case audit requirements remain; their storage choices are pending, not new audit requirements.')
-PENDING_STAGE8 = ('Pending Salesforce review — remove Stage 8 and relocate its applicable fields to the Stage 7 OM section. Until approved, retain Stage 8 and its existing delivery milestone. '
-                  'If approved, update software-only completion, GCP automation, forecast/stage mappings, permissions, reports, historical interpretation and the Case Value Tracking Start Date. Future receipt/deployment facts are captured when they occur, not as booking prerequisites.')
-PENDING_PARTNER = ('Pending design — decide whether each partner independently carries Sourced, Influenced and Fulfilled credit and how multiple roles coexist; finalize any per-partner Partner-Led/Joint timing and its reconciliation with Partner-only/Sales-only, including GCP. '
-                   'Resolve renewal attribution inheritance and any split-source credit separately. Do not automatically source a deal from registration, overwrite source when the transacting partner changes, or treat draft compensation rules as approved.')
-PENDING_OTHER = ('Pending implementation mappings — decision-maker Contact Roles versus narrative fields; separate POC completion-evidence storage; hardware IPG exceptions; validation-bypass ownership and rule scope; remaining field-history storage choices; historical Opportunity Source crosswalk. '
-                 'These are decisions within existing controls, not permission to create duplicate fields, bypass booking-policy approvals or remove existing audit evidence.')
+           'Existing POC-update, route-change, override and Account/Case audit requirements remain. Administrators select supported storage mechanisms; unmarked workbook recommendations do not authorize additional tracking requirements.')
+DECISION_MAKERS = ('Require selection of actual Salesforce Contacts in the stage flow: Technical Decision Maker before exiting Stage 3 to Stage 4, and Decision Maker before exiting Stage 4 to Stage 5. '
+                   'The selection must populate the matching Opportunity Contact Role. Reuse an existing matching role instead of duplicating it. '
+                   'Enforce these exit gates on stage skips as well; a narrative name without a linked Contact and role does not satisfy the gate.')
+PARTNER_CREDIT = ('Record exactly one contribution category per partner–opportunity association: Sourced, Influenced or Fulfilled. A partner cannot receive multiple contribution labels on the same opportunity. '
+                  'At most one partner may receive Sourced credit on an opportunity; no sourcing partner is required when none sourced it. Do not split source credit. '
+                  'Keep multiple participating partners and their operational roles reportable independently of contribution category and the Transacting Partner bill-to field. '
+                  'Retain the existing opportunity-level Partner-only, Partner-Led, Joint and Sales-only classifications and their current rules for the remainder of 2026. Any later deprecation requires a separate decision; do not introduce new per-partner timing classifications. '
+                  'Preserve evidence-based source protection, booked-credit freeze and audited corrections. Changing the transacting partner or registering a deal does not automatically assign sourcing credit.')
 
 # Updated requirement, acceptance, notes, net-change explanation. Existing IDs only.
 REVISED = {
- 8: ('Approve POCs through both managers while retaining separate evaluation completion evidence.', POC, 'Reuse existing POC controls and preserve history; completion storage mapping remains pending.', 'Add dual-manager approval; replace the proposed status presentation without removing completion evidence.'),
+ 8: ('Approve POCs through both managers while retaining separate evaluation completion evidence.', POC, 'Reuse existing POC controls and preserve history; capture separate completion evidence in an open-ended text field.', 'Add dual-manager approval; replace the proposed status presentation without removing completion evidence.'),
  11: ('Accept a complete, matched customer commitment and final Primary Quote before Won Decision.', COMMITMENT+' '+MEDIA+' '+LOGISTICS, 'Retain Stage 4 Primary Quote; change Stage 5 exit validation and upload prompts.', 'Allow qualifying contract-only commitments and tighten final quote/document matching.'),
  13: ('Give OM a reconciled order and an explicit rejection path before booking.', 'Only authorized OM accepts 6 → 7 after reconciliation. '+REJECTION, 'Booked protections and the existing Case handoff remain.', 'Add OM rejection 6 → 5, notes, audit and Opportunity team/RevOps notifications.'),
  17: ('Extend the Stage 7 deployment Case handoff with product and acceptance information.', DEPLOY, 'Case creation/linking and retry deduplication already exist; extend them.', 'Transfer product classification, testing and start/end information; record on-site and working confirmation.'),
- 21: ('Make every participating account’s roles and contribution reportable on the existing association.', PARTNERS, 'Use the existing object; detailed credit algorithms remain pending.', 'Structure additional roles and per-partner contribution instead of relying only on narrative.'),
+ 21: ('Make every participating account’s roles and contribution reportable on the existing association.', PARTNERS, 'Use the existing object and the contribution rules in BR-SS-150.', 'Structure additional roles and per-partner contribution instead of relying only on narrative.'),
  23: ('Require NVIDIA engagement at Stage 2 and make GPU opportunity data visible and reportable.', NVIDIA, 'Add engagement, contact and GPU views to leader click-through, pipeline/forecast reports and the NVIDIA dashboard; show pipeline, bookings and GPU demand by type, region, segment and sales team.', 'Replace association-only requiredness with Stage 2/dropdown-driven validation; expand summary and reporting.'),
- 26: ('Remove unnecessary legacy prompts while retaining the newly required decision-maker capture.', 'Keep the existing field moves except Technical Decision Maker is required at Stage 3 and Decision Maker at Stage 4. Preserve historical data.', 'Resolve Contact Role versus narrative mapping before adding storage; see BR-SS-133.', 'Reverse the proposed removal of the two decision-maker prompts.'),
+ 26: ('Remove unnecessary legacy prompts while retaining the newly required decision-maker capture.', DECISION_MAKERS+' Keep the other existing field moves and preserve historical data.', 'Use Salesforce Contact selection and Opportunity Contact Roles; see BR-SS-133.', 'Reverse the proposed removal of the two decision-maker prompts.'),
  30: ('Clarify the early bill-to meaning of Transacting Partner after attribution migration.', TRANS, 'The rename and replacement attribution dependency already exist.', 'Specify expected DDN bill-to, associated-account representation and final quote/order reconciliation.'),
  33: ('Use the deployed win/loss taxonomy and map historical values without recreating live features.', 'Mark the already-live Won/Loss Reason changes as existing. Supply fields, current values and a proposed crosswalk for business mapping; preserve original historical values.', 'Do not commission duplicate fields or repeat the completed rollout.', 'Correct implementation status and make the historical-mapping handoff explicit.'),
  34: ('Capture conditional customer interview information for New and Existing Business only.', 'For New/Existing Business, eligibility is required at win/loss except Stage 0 misqualification. Yes requires a Contact; No requires a reason. Do not extend this rule to renewals.', 'Reuse deployed Win/Loss fields; renewal notification scope is not changed by the interview exemption.', 'Remove renewals from the interview-rule expansion.'),
  39: ('Populate multi-product context from deal products and update the Managed Lustre label.', 'Allow initial manual multi-selection; derive Product Types from Opportunity Products when available. Rename 1P Google to Managed Lustre, preserving data/history. Update affected reports, CPQ mappings and integrations without double-counting deals.', 'Multi-product selection itself is already in scope.', 'Add product-driven population and the Managed Lustre label change.'),
- 50: ('Apply IPG requirements according to hardware/software scope.', 'Hardware-containing deals require Completed before Stage 6, subject to agreed hardware exceptions. Software-only deals may use Not Required.', 'Reuse the existing IPG disposition; hardware exceptions remain pending.', 'Resolve the software-only exemption and hardware completion requirement.'),
+ 50: ('Apply IPG requirements according to hardware/software scope.', LOGISTICS, 'Reuse the existing IPG disposition and retain existing hardware exception behavior.', 'Resolve the software-only exemption; retain current hardware behavior.'),
  54: ('Keep the Stage 5 shipping estimate only where physical shipment applies.', 'Estimated Shipping Date remains in Stage 5; software-only deals are exempt from hardware shipping-date requests.', 'Keep the original estimate distinct from Order shipping commitments.', 'Resolve software-only applicability; no additional date field.'),
  55: ('Keep the Stage 5 delivery request only where physical delivery applies.', 'Requested Delivery Date remains in Stage 5 and is reconciled with the Order. Software-only deals are exempt from hardware delivery-date requests.', 'Reuse the existing Order date.', 'Resolve software-only applicability; no duplicate Order field.'),
  56: ('Implement the approved two-tier Order Review Status model.', STATUS, 'Require OM reviewer in In Progress and rejection notes; see BR-SS-139 and BR-SS-013.', 'Replace the unresolved status mapping with the approved statuses and sub-statuses.'),
@@ -78,12 +80,12 @@ REVISED = {
  86: ('Capture interview eligibility for New and Existing Business without extending it to renewals.', 'New/Existing wins and losses require eligibility except Stage 0 misqualification. Renewals are excluded from this expansion.', 'Part of BR-SS-034; use the deployed field.', 'Remove renewal requiredness.'),
  87: ('Identify a customer interview Contact when eligible and in scope.', 'For in-scope New/Existing deals, Yes requires a linked Salesforce Contact. Do not extend this conditional interview rule to renewals.', 'Reuse the deployed interview Contact field.', 'Apply the renewal exemption to dependent Contact validation.'),
  88: ('Capture the reason outreach is declined when the interview rule applies.', 'For in-scope New/Existing deals, No requires WL Reason Cannot Approach. Do not extend this conditional interview rule to renewals.', 'Reuse the deployed reason field.', 'Apply the renewal exemption to dependent reason validation.'),
- 100: ('Make primary and additional account roles separately reportable per opportunity.', 'Keep one account–opportunity association and classification; capture primary and additional roles in structured reportable form with per-partner contribution evidence.', 'Part of BR-SS-021. Detailed credit categories and timing remain pending.', 'Replace narrative-only secondary contributions with structured reporting.'),
+ 100: ('Make primary and additional account roles separately reportable per opportunity.', 'Keep one account–opportunity association and classification; capture primary and additional roles in structured reportable form with per-partner contribution evidence.', 'Part of BR-SS-021. Apply BR-SS-150: one contribution category per partner and at most one sourcing partner.', 'Replace narrative-only secondary contributions with structured reporting.'),
  111: ('Retire Demand Gen intake and complete the existing Stage 0 SAL migration.', 'Marketing, BDR and partner teams create new inbound opportunities in Stage 0. Move the Demand Gen SAL process and records to Opportunity; preserve decisions, actors, dates, notes and submission history. Coordinate cutover and source/campaign mapping with MAP.', 'Keep the existing Stage 0 acceptance, qualification and seller-direct paths; no parallel SAL system.', 'Explicitly retire Demand Gen intake and define its migration/cutover.'),
 }
-# New IDs start after the existing maximum, 132. Pending items have no active gate.
+# New IDs start after the existing maximum, 132. Withdrawn IDs 149 and 151 are not reused.
 NEW = [
- (133,'Stage decision-makers','Require the appropriate decision-makers at Stages 3 and 4.','Technical Decision Maker is required at Stage 3; Decision Maker is required at Stage 4. Reuse the existing contact/field model after confirming the mapping.','Confirmed'),
+ (133,'Stage decision-makers','Select decision-maker Contacts and satisfy Contact Roles before exiting Stages 3 and 4.',DECISION_MAKERS,'Confirmed'),
  (134,'Renewal procurement','Add Stage 5 Procurement to the renewal sales process.','Renewals can progress 4 → 5 → 6, with Stage 5 in Commit; retain valid renewal-specific gates.','Confirmed'),
  (135,'Backward stage authority','Restrict backward moves from Won Decision and Closed Won.',PERMISSIONS,'Confirmed'),
  (136,'Close Date ownership','Give OM Close Date ownership and restrict post-booking changes.',CLOSE_DATE,'Confirmed'),
@@ -99,9 +101,7 @@ NEW = [
  (146,'Field-history allocation','Apply the CB field-history decisions without deleting historical evidence.',HISTORY,'Confirmed'),
  (147,'Booking process reference','Add Booking an Order guidance to the website and enablement.','Publish the policy-based document paths, reconciliation checklist, approval responsibilities, cutoff, channel treatment and post-booking process as reference guidance. Only explicitly approved system changes become fields or stage gates.','Reference only'),
  (148,'Rollout preparation','Communicate the new requirements and backfill known data before enforcement.','RevOps populates reliable existing information, identifies remaining owner actions and communicates the changes to the field in advance. Do not fabricate missing evidence.','Process only'),
- (149,'Stage 8 removal proposal','Review Stage 8 removal and all dependent changes.',PENDING_STAGE8,'Pending'),
- (150,'Partner credit design','Finalize the detailed per-partner credit rules.',PENDING_PARTNER,'Pending'),
- (151,'Remaining implementation decisions','Resolve mappings and control ownership within the existing design.',PENDING_OTHER,'Pending'),
+ (150,'Partner contribution rules','Use one contribution category per partner and at most one sourcing partner per opportunity.',PARTNER_CREDIT,'Confirmed'),
 ]
 
 def revise(data):
@@ -171,7 +171,7 @@ SCENARIOS = [
  ('Bull / AQ Compute / NVIDIA','Capture Bull’s transacting and solution contribution, AQ Compute’s customer role and NVIDIA’s influence. A registration alone does not establish sourcing.'),
  ('Provider · Accenture / Perrigo / Cisco','Accenture can be the contracting buyer/provider, Perrigo the underlying customer and Cisco an influencer. Do not force the Opportunity Account to Perrigo.'),
  ('Multi-tenant NCP · TCS','TCS can be the buyer/provider serving multiple customers; associate known underlying customers without inventing tenants. Capture NVIDIA engagement separately when applicable.'),
- ('Hyperscaler · GCP / Jump Trading','GCP is the bill-to/hyperscaler and Jump Trading the underlying customer. Preserve the documented GCP motion; reconcile its Partner-only treatment in the pending credit design rather than forcing reseller logic.'),
+ ('Hyperscaler · GCP / Jump Trading','GCP is the bill-to/hyperscaler and Jump Trading the underlying customer. Preserve the documented GCP motion and its existing opportunity-level Partner-only classification for the remainder of 2026; do not force reseller logic.'),
 ]
 
 def simple_table(headers,rows):
@@ -183,6 +183,7 @@ def policy_content():
 # Explicit replacements remove superseded wording rather than appending contradictions.
 def normalize(text):
     replacements={
+      'Implementation prerequisite — RevOps must confirm the existing Bypass Validations permissions, affected rules and audit evidence. Do not grant new bypass access or treat that field as blanket authority to ignore the new gates. Preserve approved migration/historical-record exceptions; record authorized use. Resolve the rule-by-rule scope before enabling the new validations.':'Administrative implementation choice — System Administrators decide whether to retain or configure a validation-bypass mechanism for exceptional corrections. This is not a Sales Ops entitlement or a business requirement in this release. Any authorized use must preserve audit evidence and does not replace required booking-policy approvals.',
       'New Business, Existing Business and Renewal':'New Business and Existing Business (renewals excluded)',
       'if Yes, its status must be Completed or Cancelled':'if Yes, separate completion evidence must show Completed or Cancelled',
       'Identify the actual PO File using existing document-type metadata or an explicit PO File reference; Sales identifies it and OM verifies the content. A random attachment does not satisfy the PO requirement.':'Identify the governing PO/contract Files and matched approved final Primary Quote using existing document metadata or explicit links. Sales attaches the package and OM verifies it; an unrelated attachment does not satisfy customer commitment.',
@@ -241,7 +242,7 @@ def system(page):
         page=update_field(page,name,'Existing/proposed date mapping','Stage 5 where physical shipment/delivery applies',LOGISTICS+' Reuse the existing date model and distinguish estimated/requested dates from actual events.')
     page=update_field(page,'Product Type','Multi-select; then product-derived','Existing choices; 1P Google → Managed Lustre','Allow initial manual multiple selections, then derive values from Opportunity Products when available. Preserve old selections/history through the Managed Lustre label change; update CPQ, reports and integrations without splitting the deal or double-counting its value.')
     old_applicability=('Applicability to confirm — OM and GSS must define the logistics dates, deployment-Case requirement and Stage 8 completion evidence for renewals, software/services, Internal Transfer, Non-Revenue and No Shipping required orders. The physical-delivery path applies where shipping/deployment is in scope. Do not invent delivery dates, create a dummy Case or treat shipment as receipt to satisfy it. Confirm the applicable alternative before enabling universal logistics/Case validation; no new exception status or field is approved here.')
-    page=page.replace(old_applicability,'Software-only deals are exempt from hardware shipping/delivery requests and may use IPG Not Required. Confirm the appropriate Case/licensing/completion path for other non-shipping motions and remaining renewal, Internal Transfer and Non-Revenue cases. Do not invent physical delivery dates. Stage 8 removal remains pending.')
+    page=page.replace(old_applicability,'Software-only deals are exempt from hardware shipping/delivery requests and may use IPG Not Required. Confirm the appropriate Case/licensing/completion path for other non-shipping motions and remaining renewal, Internal Transfer and Non-Revenue cases. Do not invent physical delivery dates.')
     # Reuse the live win/loss fields and choices; do not advertise duplicate development.
     for name in ['Won Reason','Loss Reason','OK to Interview (Win/Loss)?','Contact for Win/Loss Interview','WL Reason Cannot Approach']:
         pattern=r'<tr\b[^>]*data-field="'+re.escape(name)+r'"[^>]*>.*?</tr>'
@@ -257,9 +258,12 @@ def system(page):
     page=page.replace('POC Status = Completed or Cancelled','separate POC completion evidence = Completed or Cancelled')
     page=page.replace('Add POC Status and POC Updates','Add POC Approved and retain POC Updates')
     for id,name in [('s3','Technical Decision Maker'),('s4','Decision Maker')]:
-        page=add_fields(page,id,[field(name,'Existing mapping to confirm','Required in this stage','Record the appropriate decision authority. Reuse Contact Roles or existing fields after mapping; do not add duplicate storage.')])
+        page=add_fields(page,id,[field(name,'Salesforce Contact selection → Opportunity Contact Role','Required before exiting this stage',DECISION_MAKERS)])
     page=add_fields(page,'ongoing-nvidia-detail',[field('NVIDIA Contacts / Roles','Existing Opportunity Contact Roles preferred','Multiple contacts and NVIDIA-specific roles','Require when NVIDIA is engaged; support reporting across opportunities. Map Sales Representative, Technical Lead and Partner Lead into the existing role model before configuration.')])
     page=add_fields(page,'s2',[field('NVIDIA Engagement','Existing picklist','Required on entry to Stage 2',NVIDIA),field('POC Approved','Approval checkbox','AE Manager + SE Manager',POC)])
+    for id in ['s2','ongoing-poc-detail']:
+        page=add_fields(page,id,[field('POC Completion Evidence','Open-ended long text','Completed or Cancelled outcome and supporting evidence',POC,change='Added · 19 Oct')])
+    page=add_fields(page,'ongoing-partners-detail',[field('Partner Contribution Category','Single-select on existing partner–opportunity association','Sourced / Influenced / Fulfilled',PARTNER_CREDIT,change='Added · 19 Oct')])
     for id in ['s4','s5']:
         page=add_fields(page,id,[field('Documentation / media fulfillment','Digital / Physical','Digital requires fulfillment email',MEDIA)])
     page=add_fields(page,'s5',[field('Final Primary Quote','Existing CPQ relationship','Approved final quote before exit',COMMITMENT)])
@@ -267,27 +271,27 @@ def system(page):
     page=add_fields(page,'s7',[field('Support Start Date','Reuse suitable date field','Applicable support start','Carry the approved support-start and acceptance context to the deployment Case.'),field('Expected Revenue Recognition Date','Reuse suitable date field','Expected date; not actual recognition','Capture the expected date and carry relevant context; booking and recognition are distinct.')])
     page=add_fields(page,'s5',[field('Digital Fulfillment Email','Email; reuse suitable field','Required only when Digital','Prompt in Stage 4 and require before Stage 6 only for Digital documentation/media fulfillment.')])
     page=append_to(page,'ongoing-quoting-detail','<h4>Installation location on the final quote</h4>'+simple_table(['Field','Requirement'],[('Installation matches shipping','Capture on the quote; final quote requires an answer.'),('Installation Location','Required if different on a final quote. Budgetary quotes are exempt; reuse existing location fields.')]),'article')
-    for id,extra in [('s1','On entry to Stage 2, require NVIDIA Engagement and conditional engaged details.'),('s2','Technical Decision Maker is required at Stage 3; POC manager approval is separate from completion.'),('s3','Decision Maker is required at Stage 4.'),('s4','Renewals can enter Procurement / Commit. Complete Digital/Physical fulfillment before leaving Stage 5.'),('s5','Require the approved final Primary Quote and applicable Digital email; apply the software-only logistics exemption.')]:
+    for id,extra in [('s1','On entry to Stage 2, require NVIDIA Engagement and conditional engaged details.'),('s2','POC manager approval is separate from completion; document a required POC’s Completed or Cancelled outcome in POC Completion Evidence before exit.'),('s3','Select a Technical Decision Maker Salesforce Contact and satisfy that Opportunity Contact Role before exiting Stage 3 to Stage 4.'),('s4','Select a Decision Maker Salesforce Contact and satisfy that Opportunity Contact Role before exiting Stage 4 to Stage 5. Renewals can enter Procurement / Commit. Complete Digital/Physical fulfillment before leaving Stage 5.'),('s5','Require the approved final Primary Quote and applicable Digital email; apply the software-only logistics exemption.')]:
         start=page.index('id="'+id+'"');end=page.index('</section>',start)
         fragment=page[start:end]
         fragment=re.sub(r'(<div class="stage-gate">.*?<p>)(.*?)(</p>)',lambda m:m[1]+m[2]+' '+E(extra)+m[3],fragment,count=1,flags=re.S)
         page=page[:start]+fragment+page[end:]
     # Stage notices and gate summaries make timing visible, not buried in the log.
-    for id,text in [('s1','On entry to Stage 2, require NVIDIA Engagement and the conditional engaged details.'),('s2',NVIDIA+' '+POC),('s3','Technical Decision Maker is required at Stage 3.'),('s4','Decision Maker is required at Stage 4. '+MEDIA),('s5',COMMITMENT+' '+LOGISTICS+' Renewals explicitly include Stage 5 Procurement / Commit before Won Decision.'),('s6',REJECTION+' '+STATUS),('s7',CLOSE_DATE+' '+DEPLOY),('s8',PENDING_STAGE8)]:page=append_to(page,id,note(text))
-    for id,text in [('ongoing-nvidia-detail',NVIDIA+' Add engagement/contact/GPU reporting to leader click-through reports, forecast and pipeline views and the NVIDIA dashboard. Report pipeline, bookings and GPU demand by type, region, segment and sales team.'),('ongoing-poc-detail',POC),('ongoing-quoting-detail',COMMITMENT+' Final quotes capture whether installation location matches shipping; if different, require Installation Location. Budgetary quotes are exempt.'),('ongoing-primary-detail',TRANS),('ongoing-partners-detail',PARTNERS),('ongoing-contribution-detail',PENDING_PARTNER),('ongoing-logistics-detail',MEDIA+' '+LOGISTICS),('ongoing-ipg-detail',LOGISTICS),('ongoing-conversion-detail','Retire new Demand Gen opportunity intake. BDR, Marketing and partner teams use Stage 0. Migrate existing SAL records/process to Opportunity and coordinate cutover with MAP; retain history and the existing qualification paths.'),('ongoing-next-detail',CLOSE_DATE),('ongoing-buying-committee','Technical Decision Maker is required at Stage 3 and Decision Maker at Stage 4. Provide a consolidated Opportunity MEDDPICC view using existing evidence; contact/field and Metrics mappings remain pending.'),('case-current-state',DEPLOY)]:page=append_to(page,id,note(text),'article')
+    for id,text in [('s1','On entry to Stage 2, require NVIDIA Engagement and the conditional engaged details.'),('s2',NVIDIA+' '+POC),('s3',DECISION_MAKERS),('s4',DECISION_MAKERS+' '+MEDIA),('s5',COMMITMENT+' '+LOGISTICS+' Renewals explicitly include Stage 5 Procurement / Commit before Won Decision.'),('s6',REJECTION+' '+STATUS),('s7',CLOSE_DATE+' '+DEPLOY)]:page=append_to(page,id,note(text))
+    for id,text in [('ongoing-nvidia-detail',NVIDIA+' Add engagement/contact/GPU reporting to leader click-through reports, forecast and pipeline views and the NVIDIA dashboard. Report pipeline, bookings and GPU demand by type, region, segment and sales team.'),('ongoing-poc-detail',POC),('ongoing-quoting-detail',COMMITMENT+' Final quotes capture whether installation location matches shipping; if different, require Installation Location. Budgetary quotes are exempt.'),('ongoing-primary-detail',TRANS),('ongoing-partners-detail',PARTNERS),('ongoing-contribution-detail',PARTNER_CREDIT),('ongoing-logistics-detail',MEDIA+' '+LOGISTICS),('ongoing-ipg-detail',LOGISTICS),('ongoing-conversion-detail','Retire new Demand Gen opportunity intake. BDR, Marketing and partner teams use Stage 0. Migrate existing SAL records/process to Opportunity and coordinate cutover with MAP; retain history and the existing qualification paths.'),('ongoing-next-detail',CLOSE_DATE),('ongoing-buying-committee',DECISION_MAKERS+' Provide a consolidated Opportunity MEDDPICC view using existing evidence; reuse existing fields and roles.'),('case-current-state',DEPLOY)]:page=append_to(page,id,note(text),'article')
     page=append_to(page,'ongoing-partners-detail','<h4>Partner-flow examples</h4>'+simple_table(['Motion','How to represent the deal'],SCENARIOS),'article')
     page=append_to(page,'s7',note(PERMISSIONS))
     page=append_to(page,'s6',note('OM review fields are visible to reps and editable only by authorized OM. Require an OM-group reviewer when In Progress. Report Stage 6 → 7 against the 24-hour target using transition history; the policy cutoff remains separate.'))
     # Add the general knowledge and audit decisions before implementation.
     marker='<section class="stage" id="implementation-requirements">'
     sections='<section class="stage" id="booking-an-order"><header class="stagehead"><div><p class="label">Process reference · 19 October 2026</p><h2>Booking an Order</h2></div></header><div class="body">'+policy_content()+'</div></section>'
-    sections+='<section class="stage" id="october-decisions"><header class="stagehead"><div><p class="label">Implementation preparation</p><h2>History, rollout and pending decisions</h2></div></header><div class="body"><h3>Field-history allocation</h3><p>'+E(HISTORY)+'</p><h3>Rollout</h3><p>Communicate the new requirements in advance. RevOps backfills trustworthy existing information, identifies owner actions and avoids fabricated evidence. Mark the deployed win/loss taxonomy as existing; provide fields and value crosswalks for historical mapping.</p><h3>Pending — not active stage changes</h3><ul>'+''.join('<li>'+E(x)+'</li>' for x in [PENDING_STAGE8,PENDING_PARTNER,PENDING_OTHER])+'</ul></div></section>'
+    sections+='<section class="stage" id="october-decisions"><header class="stagehead"><div><p class="label">Implementation preparation</p><h2>History and rollout</h2></div></header><div class="body"><h3>Field-history allocation</h3><p>'+E(HISTORY)+'</p><h3>Rollout</h3><p>Communicate the new requirements in advance. RevOps backfills trustworthy existing information, identifies owner actions and avoids fabricated evidence. Mark the deployed win/loss taxonomy as existing; provide fields and value crosswalks for historical mapping.</p></div></section>'
     page=page.replace(marker,sections+marker,1)
-    page=page.replace('<a href="#change-log">Change log</a>','<a href="#booking-an-order">Booking an Order</a><a href="#october-decisions">Pending decisions</a><a href="#change-log">Change log</a>',1)
+    page=page.replace('<a href="#change-log">Change log</a>','<a href="#booking-an-order">Booking an Order</a><a href="#october-decisions">History and rollout</a><a href="#change-log">Change log</a>',1)
     # One-slide summary: retain layout and link the new fields to their detail.
     row=re.search(r'<tr><th scope="row" class="slide-row-label">Fields<small>.*?</tr>',page,re.S)[0]
     cells=re.findall(r'<td class="slide-fields">.*?</td>',row,re.S)
-    additions={3:[('NVIDIA Engagement · entry to 2','s2'),('GPU / project / NVIDIA contacts · if engaged','ongoing-nvidia-detail'),('POC approval + completion evidence','ongoing-poc-detail')],4:[('Technical Decision Maker','s3')],5:[('Decision Maker','s4'),('Digital / Physical fulfillment','s4')],6:[('Approved final Primary Quote','s5'),('Fulfillment email · if Digital','s5')],7:[('OM Reviewer · In Progress','s6'),('Rejection notes · if rejected','s6')]}
+    additions={3:[('NVIDIA Engagement · entry to 2','s2'),('GPU / project / NVIDIA contacts · if engaged','ongoing-nvidia-detail'),('POC approval + completion evidence','ongoing-poc-detail')],4:[('Technical Decision Maker · exit 3','s3')],5:[('Decision Maker · exit 4','s4'),('Digital / Physical fulfillment','s4')],6:[('Approved final Primary Quote','s5'),('Fulfillment email · if Digital','s5')],7:[('OM Reviewer · In Progress','s6'),('Rejection notes · if rejected','s6')]}
     for i,items in additions.items():
         cells[i]=cells[i].replace('</td>',''.join('<a class="october-slide-field" href="#'+anchor+'"><span class="field-existing">'+E(label)+'</span></a>' for label,anchor in items)+'</td>')
     revised=row
@@ -299,7 +303,7 @@ def system(page):
 
 def release_log(data):
     rows=[r for r in data[1:] if r[12]==DATE]
-    out='<details class="audit-group change-group release-group" id="changes-2026-10-19"><summary>'+TITLE+'<span>'+str(len(rows))+' added / revised requirements</span></summary><p>Compared with the pre-October 19 website scope. Existing BR IDs are retained; pending proposals are not approved gates. The implementation table and CSV carry the same date, change type, decision status and net-change description.</p>'
+    out='<details class="audit-group change-group release-group" id="changes-2026-10-19"><summary>'+TITLE+'<span>'+str(len(rows))+' added / revised requirements</span></summary><p>Compared with the pre-October 19 website scope. Existing BR IDs are retained. The resolved business decisions are incorporated; withdrawn proposals are excluded from this release. The implementation table and CSV carry the same date, change type, decision status and net-change description.</p>'
     out+='<div class="field-register-wrap"><table class="release-table"><thead><tr>'+''.join('<th scope="col">'+h+'</th>' for h in ['Requirement','Change','Decision','Net change'])+'</tr></thead><tbody>'
     for r in rows:
         out+='<tr class="'+row_class(r)+'" data-requirements="'+r[1]+'"><td><a href="#requirement-'+r[1]+'">'+r[1]+'</a> · '+E(r[2])+'</td><td>'+E(r[11])+'</td><td>'+E(r[13])+'</td><td>'+E(r[14])+'</td></tr>'
@@ -309,7 +313,7 @@ def row_class(row):
     return 'release-pending' if row[13]=='Pending' else ('release-'+row[11].lower())
 
 def toolbar():
-    return '<div class="release-tools"><p><strong>October 19 changes:</strong> <span class="release-key release-added">Added</span> <span class="release-key release-revised">Revised</span> <span class="release-key release-pending">Pending decision</span>. Unshaded rows are existing scope. Color is reinforced by the change/status columns.</p><label for="requirement-release-filter">Show requirements </label><select id="requirement-release-filter"><option value="all">All requirements</option><option value="latest">October 19 additions and revisions</option><option value="added">Added October 19</option><option value="revised">Revised October 19</option><option value="pending">Pending decisions</option></select><p id="requirement-release-count" role="status" aria-live="polite"></p><p><a href="downloads/october-19-requirements.csv" download="GTM-October-19-Requirements.csv">Download October 19 changes only (CSV)</a></p><p>CSV has no color formatting; both downloads include Change type, Change date, Decision status and Net change columns.</p></div>'
+    return '<div class="release-tools"><p><strong>October 19 changes:</strong> <span class="release-key release-added">Added</span> <span class="release-key release-revised">Revised</span>. Unshaded rows are existing scope. Color is reinforced by the change/status columns.</p><label for="requirement-release-filter">Show requirements </label><select id="requirement-release-filter"><option value="all">All requirements</option><option value="latest">October 19 additions and revisions</option><option value="added">Added October 19</option><option value="revised">Revised October 19</option></select><p id="requirement-release-count" role="status" aria-live="polite"></p><p><a href="downloads/october-19-requirements.csv" download="GTM-October-19-Requirements.csv">Download October 19 changes only (CSV)</a></p><p>CSV has no color formatting; both downloads include Change type, Change date, Decision status and Net change columns.</p></div>'
 
 def assets(page):
     return page.replace('</head>','<link rel="stylesheet" href="assets/october.css"><script src="assets/october.js" defer></script></head>',1)
@@ -340,7 +344,7 @@ def learning(modules,design,definitions,examples,stages):
     lesson('poc','POC Approved records dual-manager approval; separate completion evidence proves the evaluation is Completed or Cancelled.',
       ['Both AE Manager and SE Manager approve before the checkbox is checked.','Approval alone does not prove completion.','A required POC needs Completed or Cancelled evidence before progressing beyond Stage 2.'],
       'Both managers approve a POC, but the customer evaluation is still running.',
-      ['Define the evaluation — Record POC Required?, engagement, success criteria and owner.','Request approval — Notify AE Manager and SE Manager; retain both decisions and approval times.','Record the outcome separately — Preserve completion/cancellation evidence and POC Updates; final storage mapping remains pending.','Apply the gate — A required unresolved evaluation cannot advance beyond Stage 2, even when approved.'],
+      ['Define the evaluation — Record POC Required?, engagement, success criteria and owner.','Request approval — Notify AE Manager and SE Manager; retain both decisions and approval times.','Record the outcome separately — Describe the Completed or Cancelled outcome and supporting evidence in the open-ended POC Completion Evidence field; retain POC Updates.','Apply the gate — A required unresolved evaluation cannot advance beyond Stage 2, even when approved.'],
       'Approved means done.','POC Approved is checked after both managers approve; evaluation remains open and blocks progression until Completed or Cancelled.',
       'Does POC Approved permit Stage 3 while testing continues?','No. Manager approval and evaluation completion are separate controls.','Use the approval checkbox without weakening the existing evaluation gate.')
     lesson('procurement','Procurement assembles the approved final Primary Quote and matching binding customer commitment before Won Decision.',
@@ -358,7 +362,7 @@ def learning(modules,design,definitions,examples,stages):
     lesson('partner-accounts','The existing Associated accounts records show each participant’s commercial position, structured roles and contribution evidence on an opportunity.',
       ['Reuse the existing Opportunity association mechanism; preserve Account relationships.','Separate bill-to, downstream partner and underlying customer.','Make multiple contributions reportable without duplicating opportunity value.'],
       'Carahsoft transacts as distributor, SHI participates downstream, and a customer receives the solution with NVIDIA involvement.',
-      ['Map the commercial chain — Identify DDN bill-to, downstream participants and the customer; do not invent a distributor where none exists.','Capture roles and evidence — Use one account–opportunity association with primary/additional reportable roles, contribution evidence, timing, contacts and plan.','Handle provider motions — For NCPs, distinguish the buyer/provider from known tenants; the Opportunity Account follows the actual motion.','Inspect without double counting — Report per-partner participation and deduplicate total pipeline/bookings. Apply approved credit rules while replacements remain pending.'],
+      ['Map the commercial chain — Identify DDN bill-to, downstream participants and the customer; do not invent a distributor where none exists.','Capture roles and evidence — Use one account–opportunity association with primary/additional reportable roles, contribution evidence, timing, contacts and plan.','Handle provider motions — For NCPs, distinguish the buyer/provider from known tenants; the Opportunity Account follows the actual motion.','Inspect without double counting — Report per-partner participation and deduplicate total pipeline/bookings. Use one contribution category per partner, at most one sourcing partner overall, and retain the existing opportunity-level classifications for 2026.'],
       'Put the distributor in Primary Partner and give it all credit.','Carahsoft is bill-to, SHI has its evidenced downstream role, the customer is associated, and NVIDIA involvement is captured separately.',
       'Does the bill-to partner automatically get sourcing credit?','No. Transaction position, origin and contribution are distinct; source needs evidence.','Describe the whole partner flow on the existing records.')
     lesson('fulfillment','Transacting Partner identifies the expected DDN bill-to partner before the order exists and is reconciled with the final quote/order.',
@@ -367,10 +371,12 @@ def learning(modules,design,definitions,examples,stages):
       ['Identify the bill-to — Capture the partner that is expected to buy from DDN.','Link its role — Ensure that account is associated with the opportunity and retains its transacting role.','Represent downstream parties — Keep NetZero and any downstream collaborators separately associated.','Reconcile at order — Match final quote/order bill-to; do not change source merely because the transacting partner changes.'],
       'Replace the transacting OEM with the ultimate customer.','SMC is the expected DDN bill-to; NetZero is the associated underlying customer.',
       'Should changing Transacting Partner change Opportunity Source?','No. Preserve origin and evidenced contribution independently.','Capture early commercial visibility without collapsing partner attribution.')
-    # Explicitly replace instructional endorsement of unapproved draft algorithms.
-    by_id['partner-credit']['reminder'][0]='Apply the existing approved contribution model until the replacement design is approved.'
-    by_id['partner-credit']['reminder'][2]='Per-partner Sourced/Influenced/Fulfilled and timing rules are pending; booked-credit protection remains.'
-    definitions['partner-credit'] += ' '+PENDING_PARTNER
+    # Preserve the existing opportunity classifications while distinguishing per-partner credit.
+    by_id['partner-credit']['reminder'][0]='Keep the existing opportunity-level Partner-only, Partner-Led, Joint and Sales-only classifications and rules for the remainder of 2026.'
+    by_id['partner-credit']['reminder'][2]='Each partner receives one contribution category; at most one partner receives Sourced credit. Preserve booked-credit protection.'
+    by_id['partner-credit']['steps'][3]+=' '+PARTNER_CREDIT
+    design['partner-credit']['takeaway']+=' '+PARTNER_CREDIT
+    definitions['partner-credit'] += ' '+PARTNER_CREDIT
     lesson('next-steps','Keep AE and SE next actions current and expected timing visible; OM owns Close Date confirmation and the booked date locks at Stage 7.',
       ['Continue the existing weekly AE and SE next-action reviews.','OM confirms Close Date at booking.','Only a System Administrator may change the locked Closed Won Close Date.'],
       'A delivery slips after booking and a seller proposes moving the booked Close Date.',
@@ -379,15 +385,14 @@ def learning(modules,design,definitions,examples,stages):
       'Can Sales Ops or OM edit Close Date after Closed Won?','Only a System Administrator can change it after the lock. OM owns its booking confirmation.','Keep forecast upkeep separate from protected booked dates.')
     # Extend existing lessons without duplicating their complete baseline content.
     additions={
-      'buying-committee':'Require Technical Decision Maker at Stage 3 and Decision Maker at Stage 4. Reuse the confirmed Contact Role/field mapping. The Opportunity MEDDPICC view brings existing evidence together.',
+      'buying-committee':DECISION_MAKERS+' The Opportunity MEDDPICC view brings existing evidence together.',
       'quoting':COMMITMENT+' Final quotes require Installation Location if it differs from shipping; budgetary quotes are exempt.',
       'logistics':MEDIA+' '+LOGISTICS,
       'ipg':LOGISTICS,
       'deployment':DEPLOY,
-      'forecast':'Renewals explicitly include Stage 5 Procurement / Commit between Stage 4 and Won Decision. Stage 8 removal is pending, so the current Stage 8 forecast mapping remains.',
+      'forecast':'Renewals explicitly include Stage 5 Procurement / Commit between Stage 4 and Won Decision.',
       'sal-review':'Retire new Demand Gen intake; migrate its SAL process/history to the existing Stage 0 opportunity path with MAP cutover coordination.',
       'interviews':'Do not extend interview eligibility or dependent Contact/reason validation to renewals. The relevant Win/Loss fields and taxonomy are already live; reuse them.',
-      'invoice':PENDING_STAGE8,
     }
     for id,extra in additions.items():
         by_id[id]['steps'][3]+=' '+extra
@@ -402,15 +407,14 @@ def learning(modules,design,definitions,examples,stages):
     for i,stage in enumerate(stages):
         stage=list(walk(stage))
         if stage[0]=='s2':stage[6]+=' NVIDIA Engagement is required on entry; engaged details are conditional. POC approval and completion are separate.'
-        if stage[0]=='s3':stage[6]+=' Technical Decision Maker is required at Stage 3.'
-        if stage[0]=='s4':stage[6]+=' Decision Maker is required at Stage 4; prompt Digital/Physical fulfillment.'
+        if stage[0]=='s3':stage[6]+=' Select a Technical Decision Maker Salesforce Contact and satisfy that Opportunity Contact Role before exit to Stage 4.'
+        if stage[0]=='s4':stage[6]+=' Select a Decision Maker Salesforce Contact and satisfy that Opportunity Contact Role before exit to Stage 5; prompt Digital/Physical fulfillment.'
         if stage[0]=='s5':stage[6]=COMMITMENT+' '+LOGISTICS;stage[7]+=' Renewals include this Procurement / Commit stage.'
         if stage[0]=='s6':stage[7]+=' '+REJECTION
         if stage[0]=='s7':stage[7]+=' '+CLOSE_DATE
-        if stage[0]=='s8':stage[7]+=' Removal is pending Salesforce review; this stage remains until approved.'
         stages[i]=tuple(stage)
     definitions.update({
-      'term-poc-status':'Legacy status capture is replaced in the presentation by POC Approved. Separate Completed/Cancelled evidence remains required for a required POC before progression beyond Stage 2; storage mapping is pending.',
+      'term-poc-status':'Legacy status capture is replaced in the presentation by POC Approved. Document the Completed or Cancelled outcome in the separate open-ended POC Completion Evidence text field before a required POC progresses beyond Stage 2.',
       'term-po-secured-po-attachment':COMMITMENT,
       'term-nvidia-engagement-status':'Legacy mapping to confirm. The approved requirement uses NVIDIA Engagement; no separate required status field is added by the October 19 changes.',
       'term-ipg-finalized':LOGISTICS,
@@ -421,20 +425,25 @@ def learning(modules,design,definitions,examples,stages):
 
 EXTRA_DEFINITIONS=[
  ('POC Approved','poc',POC,None),
+ ('POC Completion Evidence','poc','An open-ended long-text field documenting the Completed or Cancelled evaluation outcome and supporting evidence. Required before a required POC exits Stage 2; separate from manager approval.',None),
  ('Customer Commitment Document','procurement','A PO, fully executed contract or both establishing the binding purchase obligation. A qualifying contract needs no PO unless the contract makes one a condition. Match the document to the approved final Primary Quote.',None),
  ('OM rejection','booking',REJECTION,None),
  ('Renewal Procurement','forecast','Stage 5 Procurement is included in the renewal sales process, allowing Commit between Stage 4 and Stage 6 Won Decision.',None),
  ('MEDDPICC Opportunity view','buying-committee','A consolidated view of existing MEDDPICC fields and buying roles. Map Metrics and other gaps before creating additional storage.',None),
  ('Booking an Order','booking','Policy-based preparation, document matching, review, cutoff and post-booking guidance. General policy reference does not automatically create Salesforce fields or gates.',None),
- ('Per-partner contribution','partner-credit',PARTNERS+' '+PENDING_PARTNER,None),
+ ('Per-partner contribution','partner-credit',PARTNERS+' '+PARTNER_CREDIT,None),
 ]
 
 def permissions_config(admin):
+    admin.FIELDS=[(a,b,c.replace('OM booking and validation bypass','OM booking')) for a,b,c in admin.FIELDS]
+    admin.FIELDS.append(('Administrative exceptions','System Administrator discretion','Any validation-bypass mechanism is an optional System Administrator implementation choice, not a Sales Ops entitlement or business requirement. It does not replace booking-policy approval.'))
     admin.FIELDS.extend([
       ('Opportunity · stage movement','Existing Sales / SE progression; delegated operations',PERMISSIONS),
       ('Opportunity · Close Date','OM confirmation; System Administrator after lock',CLOSE_DATE),
       ('Opportunity · OM section','Authorized OM edits; reps read','Require an OM-group User reviewer in In Progress. Rejection notes are required and visible to the Opportunity team and RevOps; the OM rejection action returns 6 → 5.'),
       ('Opportunity · POC Approved','Approval workflow after AE Manager and SE Manager approve','Retain both approval actors/times. Sellers cannot self-check approval. Completion/cancellation evidence stays separate from approval.'),
+      ('Opportunity · decision-maker Contacts','Existing permitted Sales / SE stage flow',DECISION_MAKERS),
+      ('Opportunity · POC Completion Evidence','Sales Engineering / authorized deal collaborators','Maintain open-ended completion/cancellation evidence separately from manager approval; require it before a required POC exits Stage 2.'),
       ('Opportunity · ERP Status / Invoice Reference','Designated Oracle integration','ERP Status is read-only for business users; synchronize invoice references without bypassing booked Close Date protection.'),
     ])
     admin.FIELDS=[(a,b,c.replace('Protect booked Close Date, Amount, Products and attribution.','Protect booked Amount, Products and attribution. Close Date uses the stricter System Administrator-only post-lock correction rule below.')) for a,b,c in admin.FIELDS]

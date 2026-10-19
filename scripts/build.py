@@ -66,7 +66,7 @@ def course(m):
     out+=f'<section class="knowledge-check" aria-labelledby="{id}-check"><h3 id="{id}-check">Knowledge check</h3><p>{E(d["question"])}</p><details class="answer"><summary>Show answer and why</summary><p>{E(d["answer"])}</p></details></section>'
     out+=f'<div class="takeaway"><h3>Use this on your next deal</h3><p>{E(d["takeaway"])}</p></div></div></details></div></article>'
     if id=='booking':out=out.replace('</div></details></div></article>','<p><a href="index.html#booking-an-order">Booking an Order: full process reference</a></p></div></details></div></article>')
-    if id=='partner-accounts':out=out.replace('</div></details></div></article>','<p><a href="index.html#ongoing-partners-detail">Partner-flow examples and pending credit design</a></p></div></details></div></article>')
+    if id=='partner-accounts':out=out.replace('</div></details></div></article>','<p><a href="index.html#ongoing-partners-detail">Partner-flow examples and contribution rules</a></p></div></details></div></article>')
     return out
 
 entries=[]
