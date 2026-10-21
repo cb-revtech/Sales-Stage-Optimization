@@ -13,6 +13,10 @@ from reference import STAGES,TERMS,TERM_EXAMPLES,TERM_TITLES,DEFINITION_TEXT,DEF
 from process_updates import APPROVED,EXCLUDED,ROLE_ROWS,EXTRA_DEFINITIONS,CHANGES
 from enablement_updates import apply,STREAMS,STREAM_OVERVIEWS
 apply(MODULES,DESIGN,CAVEATS,TERM_TITLES,DEFINITION_TEXT,DEFINITION_EXAMPLES)
+from deployment_updates import learning as apply_deployment_timing
+import october_updates as october
+apply_deployment_timing(MODULES,DESIGN,DEFINITION_TEXT,DEFINITION_EXAMPLES,STAGES)
+october.learning(MODULES,DESIGN,DEFINITION_TEXT,DEFINITION_EXAMPLES,STAGES)
 class Scan(HTMLParser):
     def __init__(self): super().__init__(); self.ids=[]; self.links=[]; self.assets=[]; self.layers=[]
     def handle_starttag(self,t,a):
@@ -55,7 +59,7 @@ for id in ['ongoing-meetings-detail','account-management','change-log']:assert i
 data=json.loads(re.search(r'<script[^>]*id="requirements-data"[^>]*>(.*?)</script>',index,re.S)[1])
 with (ROOT/'downloads/implementation-requirements.csv').open(encoding='utf-8-sig',newline='') as f:
     exported=list(csv.reader(f))
-assert exported[0]==['October 19 change','Net change','Change date','Decision status']+data[0][:11]
+assert exported[0]==['October 21 change','Net change','Change date','Decision status']+data[0][:11]
 assert len(exported)==len(data)
 for row,source in zip(exported[1:],data[1:]):
     assert row[4:]==source[:11], 'CSV requirement content differs from table'
@@ -140,7 +144,7 @@ assert 'except Stage 0 misqualification' in by_id['BR-SS-034'][8]
 assert 'Stage 4 Date' in by_id['BR-SS-116'][8]
 assert 'Required at loss; align vendor choices' not in index
 assert 'Require Loss Reason, Loss Reason Details, Competitor Lost To and' not in index
-# October 19 explicitly resolves software-only applicability for logistics dates.
+# October 21 explicitly resolves software-only applicability for logistics dates.
 for name in ['Next Step Reviewed At','SE Next Step Reviewed At']:
     assert field_rows(base,name)==field_rows(index,name),f'Rejected change altered {name}'
 for phrase in ['Advanced Stage Date','Invoice Status','Meeting Start','Meeting End']:
@@ -160,7 +164,7 @@ conversion=next(m for m in MODULES if m['id']=='conversion')
 assert 'including valid skips' in conversion['reminder'][1]
 assert 'Stage 1 Date remains blank' in DESIGN['conversion']['answer']
 assert 'Stage 1 Date stays blank' in (ROOT/'definitions.html').read_text()
-assert index.count('class="stage-gate"')==11
+assert index.count('class="stage-gate"')==10
 assert 'Roll Back Records' in index.split('id="implementation-requirements"')[0]
 assert 'parent Opportunity ID' in index.split('id="implementation-requirements"')[0]
 assert 'whole-record lock' in index.split('id="implementation-requirements"')[0]
@@ -176,19 +180,19 @@ print('PASS: audit consistency, valid-skip SQL, stage readability and Salesforce
 # The slide is intentionally a shorter view of the unchanged detailed field set.
 slide=re.search(r'<tr><th scope="row" class="slide-row-label">Fields<small>.*?</tr>',index,re.S)[0]
 slide_cells=re.findall(r'<td class="slide-fields">.*?</td>',slide,re.S)
-assert len(slide_cells)==11
+assert len(slide_cells)==10
 labels=[[html.unescape(re.sub(r'<[^>]+>','',item)) for item in re.findall(r'<span\b[^>]*>.*?</span>',cell,re.S)] for cell in slide_cells]
 assert labels[0]==['Opportunity Name','Type','Amount','Opportunity Source','Opportunity Owner']
 assert labels[1]==['CHAMPS: Challenge, Authority, Money, Priority, Stack / Storage']
 assert labels[2]==['CHAMPS: Challenge, Authority, Money, Priority, Stack / Storage','Use Case','Additional Use Case Information','Route to Market','Opportunity Contact Roles (at least one)']
 assert labels[7]==['Order Review Status','Products · Amount','Won Reason','Win Reason Details','OM Reviewer · In Progress','Rejection notes · if rejected']
-assert labels[10]==['Closed Lost · Close Date','Loss Reason','Loss Reason Details','Lost — Next Step Recommendation']
+assert labels[9]==['Closed Lost · Close Date','Loss Reason','Loss Reason Details','Lost — Next Step Recommendation']
 assert not any(x.startswith('Stage ') and x.endswith(' Date') for cell in labels[:8] for x in cell)
 assert not any('Deployment Case' in x for x in labels[7])
-assert 'Deployment Case Link' in labels[8] and 'Deployment Case Link' in labels[9]
-assert 'Deployment Case · Stages 7–8' in index and '.ongoing-deployment{grid-column:9/span 2;' in index
+assert 'Deployment Case Link' in labels[8] and 'Invoice Reference · when issued' in labels[8] and 'Invoice Date · when issued' in labels[8]
+assert 'Deployment Case · Stage 7' in index and '.ongoing-deployment{grid-column:9;' in index
 stage6=index.split('id="s6"',1)[1].split('id="s7"',1)[0]
-stage7=index.split('id="s7"',1)[1].split('id="s8"',1)[0]
+stage7=index.split('id="s7"',1)[1].split('</section>',1)[0]
 assert 'data-field="Deployment Case Link"' not in stage6
 assert 'Create or link the coordinating PS deployment Case' not in stage6
 assert 'data-field="Deployment Case Link"' in stage7
@@ -198,7 +202,7 @@ assert 'from Stage 7' in by_id['BR-SS-061'][8]
 assert 'Create or link one coordinating Case on entry to Stage 7.' in (ROOT/'enablement.html').read_text()
 print('PASS: simplified slide and Stage 7 deployment timing across process, learning and requirements.')
 
-# October 19 release: net changes, pending boundaries and all exports share one source.
+# October 21 release: net changes, pending boundaries and all exports share one source.
 from october_updates import REVISED, NEW, DATE, TITLE
 from requirement_summaries import SUMMARIES
 expected_existing={f'BR-SS-{n:03}' for n in SUMMARIES}
@@ -213,16 +217,16 @@ for n in SUMMARIES:
     else:
         assert row[11:14]==['Existing','','Existing baseline']
         assert [row[3],row[8],row[10]]==list(SUMMARIES[n]),f'Unlabeled baseline change {n}'
-with (ROOT/'downloads/october-19-requirements.csv').open(encoding='utf-8-sig',newline='') as f:
+with (ROOT/'downloads/october-21-requirements.csv').open(encoding='utf-8-sig',newline='') as f:
     changes_export=list(csv.reader(f))
 assert changes_export==[exported[0]]+[r for r in exported[1:] if r[2]==DATE]
 assert {row[0] for row in changes_export[1:]}=={'New','Revised'}
-assert f'<details class="audit-group change-group release-group" id="changes-2026-10-19"><summary>{TITLE}' in index
+assert f'<details class="audit-group change-group release-group" id="changes-2026-10-21"><summary>{TITLE}' in index
 assert 'BR-SS-149' not in by_id and 'BR-SS-151' not in by_id, 'Withdrawn proposals must not appear in current scope'
 assert by_id['BR-SS-150'][13]=='Confirmed'
 assert not any(r[13]=='Pending' for r in data[1:]), 'October business decisions are resolved'
 assert '<option value="pending">' not in index
-assert 'id="s8"' in index, 'Existing Stage 8 remains unchanged'
+assert 'id="s8"' not in index and 'href="#s8"' not in index, 'Stage 8 must be removed'
 def stage_section(id):
     return index.split('id="'+id+'"',1)[1].split('</section>',1)[0]
 def stage_gate(id):
@@ -260,12 +264,48 @@ for stale in ['a real attached PO', 'A random attachment does not satisfy the PO
 for name in ['GPU Type','GPU Quantity','Project Type']:
     assert all('visible/editable' in r and 'Opportunity summary' in r for r in field_rows(index,name))
 assert 'Approval alone is not completion' in index
-assert 'System Administrator after lock' in permissions
-assert 'Opportunity team and RevOps' in permissions
+assert 'Owner / Sales Ops before 6; OM from 6' in permissions
+assert 'opportunity owner and Sales Ops' in permissions
 assert 'Booking an Order: full process reference' in (ROOT/'enablement.html').read_text()
 assert 'Customer Commitment Document' in (ROOT/'definitions.html').read_text()
 assert 'id="booking-an-order"' in index and 'id="requirement-release-filter"' in index
-print(f'PASS: October 19 — {len(REVISED)} revised + {len(NEW)} added rows, resolved decisions; full/changes CSV parity and stage/permission guards.')
+print(f'PASS: October 21 — {len(REVISED)} revised + {len(NEW)} added rows, resolved decisions; full/changes CSV parity and stage/permission guards.')
 
 for page in ['enablement.html','definitions.html']:
     assert 'New Business, Existing Business and Renewal' not in (ROOT/page).read_text()
+
+# October 21: booking authority, date identity, actual-event handoff and consolidated release.
+assert len(slide_cells)==10
+assert '8. Invoiced' not in index and 'Stage 1–8' not in index and 'Stages 1–8' not in index
+assert 'id="october-decisions"' not in index and 'History and rollout' not in index
+confirm_order=re.search(r'<article[^>]*id="order-current-state".*?</article>',index,re.S)[0]
+assert 'id="booking-an-order"' in confirm_order
+assert '<section class="stage" id="booking-an-order"' not in index
+assert 'New requirements as of Wednesday, October 21st' in index
+assert (ROOT/'downloads/october-19-requirements.csv').read_bytes()==(ROOT/'downloads/october-21-requirements.csv').read_bytes()
+for id in ['s6','s7']:
+    assert 'Owner · Order Management + GSS' in stage_section(id)
+assert 'must be entered from Stage 6' in by_id['BR-SS-135'][8]
+assert 'including backward moves or closure as lost' in by_id['BR-SS-135'][8]
+assert 'only OM may edit it' in by_id['BR-SS-136'][8]
+assert 'Close Date and Booking Date are the same business date' in by_id['BR-SS-136'][8]
+assert 'signed contract or both as Opportunity Files' in by_id['BR-SS-011'][8]
+assert 'opportunity owner and Sales Ops' in by_id['BR-SS-013'][8]
+assert 'email and Salesforce notifications' in by_id['BR-SS-013'][8]
+assert 'reset Order Review Status to New Order with no sub-status' in by_id['BR-SS-154'][8]
+for name in ['Pending Legal Review','Pending DD Review','Pending System Issue','Booked with Exceptional Approvals']:
+    assert name in by_id['BR-SS-056'][8]
+assert 'Booked with no Exceptions' not in by_id['BR-SS-056'][8]
+assert 'only on successful OM booking from Stage 6 to Stage 7' in by_id['BR-SS-024'][8]
+assert 'Do not stamp it from Stage 7 booking' in by_id['BR-SS-058'][8]
+assert 'first verified complete on-site receipt' in by_id['BR-SS-058'][8]
+assert 'Shipping Instructions' in stage_gate('s5') and 'Packaging Instructions' in stage_gate('s5')
+for n in [152,153]:assert 'Software-only opportunities are exempt' in by_id[f'BR-SS-{n}'][8]
+assert 'current hardware behavior' in by_id['BR-SS-050'][14]
+for page in ['index.html','enablement.html','definitions.html','permissions.html']:
+    text=(ROOT/page).read_text()
+    for stale in ['7 → 8','first Stage 7 delivery milestone','first Stage 7 entry / verified',
+                  'System Administrator-only post-lock','Opportunity team and RevOps',
+                  'Booked with no Exceptions','Close Date and the policy’s official Booking Date are distinct']:
+        assert stale not in text,(page,stale)
+print('PASS: October 21 lifecycle, booking/commitment controls, logistics, notification timing and aligned legacy download.')

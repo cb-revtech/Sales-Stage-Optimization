@@ -26,6 +26,8 @@ october.permissions_config(admin_views)
 CAVEATS.update({key:october.normalize(value) for key,value in CAVEATS.items()})
 CAVEATS['booking']='Use the approved two-tier Order Review Status model and map historical values. A review status or validation bypass does not replace required booking-policy approvals.'
 EXTRA_DEFINITIONS += october.EXTRA_DEFINITIONS
+TERMS[:]=[tuple(october.normalize(x) if isinstance(x,str) else x for x in row) for row in TERMS]
+TERM_EXAMPLES.update({october.normalize(key):october.normalize(value) for key,value in list(TERM_EXAMPLES.items())})
 E=lambda s:html.escape(str(s),quote=True)
 M={m['id']:m for m in MODULES}
 S={s[0]:s for s in STAGES}
@@ -133,7 +135,9 @@ requirements=json.loads(re.search(r'<script[^>]*id="requirements-data"[^>]*>(.*?
 (ROOT/'downloads').mkdir(exist_ok=True)
 with (ROOT/'downloads/implementation-requirements.csv').open('w',encoding='utf-8-sig',newline='') as output:
     csv.writer(output).writerows(october.csv_requirements(requirements))
-with (ROOT/'downloads/october-19-requirements.csv').open('w',encoding='utf-8-sig',newline='') as output:
+with (ROOT/'downloads/october-21-requirements.csv').open('w',encoding='utf-8-sig',newline='') as output:
     csv.writer(output).writerows(october.csv_requirements([requirements[0]]+[row for row in requirements[1:] if row[12]==october.DATE]))
-(ROOT/'permissions.html').write_text(permissions_page(header))
+# Keep the previously shared download URL aligned with the current consolidated release.
+(ROOT/'downloads/october-19-requirements.csv').write_bytes((ROOT/'downloads/october-21-requirements.csv').read_bytes())
+(ROOT/'permissions.html').write_text(october.normalize(permissions_page(header)))
 print(f'Built 4 courses with {len(MODULES)} lessons and {len(entries)} definitions. Approved process updates and role permissions applied.')

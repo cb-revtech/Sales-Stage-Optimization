@@ -13,7 +13,7 @@
       row.hidden = !match;
       if (match) shown++;
     }
-    count.textContent = `${shown} of ${rows.length} requirements shown. Downloads retain their labeled full or October 19 scope.`;
+    count.textContent = `${shown} of ${rows.length} requirements shown. Downloads retain their labeled full or October 21 scope.`;
   }
   function revealLinkedRequirement() {
     const target = document.getElementById(decodeURIComponent(location.hash.slice(1)));
