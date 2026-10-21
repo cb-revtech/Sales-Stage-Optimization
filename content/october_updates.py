@@ -1,12 +1,12 @@
-"""Approved October 19, 2026 net changes and resolved business decisions.
+"""Approved October 21, 2026 net changes and resolved business decisions.
 
 Existing BR IDs remain stable. Release metadata drives the log, table and CSV.
 """
 import html
 import re
 
-DATE = '2026-10-19'
-TITLE = 'New requirements as of Monday, October 19th'
+DATE = '2026-10-21'
+TITLE = 'New requirements as of Wednesday, October 21st'
 E = lambda value: html.escape(str(value), quote=True)
 NVIDIA = ('Require a NVIDIA Engagement dropdown selection on entry to Stage 2 and beyond, including stage skips. Reuse Amy’s validated values: Not Engaged, Referred, Technical Support, Solutioning, Direct End Customer Engagement and Partner Engagement. '
           'When anything other than Not Engaged is selected, require the NVIDIA contacts and their roles, GPU Type, GPU Quantity and Project Type. Enforce these dependent requirements when engagement is changed later, not only at stage advancement. '
@@ -16,17 +16,10 @@ NVIDIA = ('Require a NVIDIA Engagement dropdown selection on entry to Stage 2 an
 POC = ('Replace the proposed POC Status presentation with POC Approved. Notify both the AE Manager and SE Manager to review; check POC Approved only after both approve, retaining approvers and approval times. '
        'Keep separate completion/cancellation evidence: when POC Required? is Yes, only documented Completed or Cancelled permits advancement beyond Stage 2, including skips. Approval alone is not completion. '
        'Retain POC Required?, POC Engagement and POC Updates. Use a separate open-ended long-text field, POC Completion Evidence, to document the Completed or Cancelled outcome and supporting evidence. Require that evidence before a required POC progresses beyond Stage 2; retain the existing completion gate.')
-COMMITMENT = ('Before leaving Stage 5, require an approved final quote marked Primary and matching customer commitment documents attached as Opportunity Files by Sales. '
-              'A qualifying fully executed contract can satisfy the commitment without a PO unless the contract makes a PO a condition of the purchase obligation. A PO, contract or both must establish the binding commitment and match the approved Primary Quote. '
-              'Prompt for the applicable file upload when the commitment is secured; replace PO-only requiredness and error messages so a valid contract-only submission can pass. Identify the governing quote and its matching documents; retain historical PO information.')
-REJECTION = ('OM may reject an opportunity from Stage 6 — Won Decision back to Stage 5 — Procurement. Require rejection notes explaining the correction and notify the Opportunity team and RevOps team. '
-             'Retain the rejection actor, time and notes. Resubmission passes the Stage 5 handoff requirements again. Use an explicit rejection action; changing an unrelated review status must not advance stages.')
-PERMISSIONS = ('Sales and Sales Engineering continue their existing permitted forward stage actions after the applicable gates pass; routine forward progression does not require Sales Ops. OM retains booking acceptance for 6 → 7. '
-               'Only System Administrators or Sales Ops may move opportunities backwards from Won Decision or Closed Won, except the authorized OM rejection from 6 → 5. '
-               'A backward action does not unlock booked facts or authorize an unapproved post-booking commercial change.')
-CLOSE_DATE = ('Order Management owns confirmation of Close Date. Lock it at Stage 7 — Closed Won; only a System Administrator may change it after locking, with an audit trail. '
-              'Sales maintains expected timing while open through the existing forecasting process. Stage regression, delivery progression and integration updates must not bypass the booked Close Date lock. '
-              'Close Date and the policy’s official Booking Date are distinct concepts; do not infer period eligibility from a stage change.')
+COMMITMENT = 'Before leaving Stage 5, require Customer Commitment and an approved final quote marked Primary. Sales attaches the governing PO, signed contract or both as Opportunity Files; either document type may satisfy OM when it establishes the binding purchase obligation and matches the approved final Primary Quote. A checkbox or unrelated file alone cannot satisfy the gate. Prompt for the actual Files when Customer Commitment is secured, identify their matching quote, and replace PO-only labels, validation and error messages. Preserve historical PO information.'
+REJECTION = 'OM may reject an opportunity from Stage 6 — Won Decision back to Stage 5 — Procurement. Require Order Review Status = Rejected, a rejection sub-status and explanatory notes. For every rejection, send email and Salesforce notifications to the opportunity owner and Sales Ops, including the opportunity name/link, Account, reason, notes, OM reviewer, rejection timestamp and Close Date. Retain the rejection history. On resubmission 5 → 6, revalidate the complete package and reset Order Review Status to New Order with no sub-status. Notify the OM group and assigned reviewer by email and Salesforce notification with the opportunity link, previous rejection reason/notes, submitter and resubmission timestamp. Deduplicate retries of the same event without suppressing later rejection/resubmission cycles.'
+PERMISSIONS = 'Sales and Sales Ops manage Stages 0–5 and submit to Stage 6 after the applicable gates pass. Only authorized OM may move an opportunity out of Stage 6 or Stage 7, including backward moves or closure as lost. OM may reject 6 → 5 with a reason and notes, and book 6 → 7 after reconciliation with Order Review Status = Booked. Stage 7 must be entered from Stage 6; direct moves from 0–5 to 7 are blocked. OM and GSS own Stages 6 and 7; GSS maintains deployment evidence but does not gain booking or stage-change authority. Enforce these controls on UI, flow, imports and integrations.'
+CLOSE_DATE = 'Before Stage 6, the opportunity owner and Sales Ops may edit Close Date. From Stage 6 onward, only OM may edit it. On booking at Stage 7, OM sets Close Date to the OM acceptance date. Close Date and Booking Date are the same business date; any separate Booking Date field must remain aligned. Subsequent stage changes, delivery updates and integrations must not automatically overwrite the booked date. Retain an audit trail of authorized OM corrections; a backward stage move must not bypass the restriction.'
 MEDIA = ('Capture Digital or Physical documentation/media fulfillment separately from IPG. Digital requires a fulfillment email. Prompt in Stage 4 and require completion before leaving Stage 5. Replace the existing booking question rather than duplicating it.')
 LOGISTICS = ('Keep Estimated Shipping Date and Requested Delivery Date in Stage 5 where applicable. Software-only deals are exempt from hardware-specific delivery requests. Retain the existing hardware IPG disposition and exception behavior; software-only may use Not Required. Do not invent shipping dates for software.')
 TRANS = ('Transacting Partner is the expected DDN bill-to partner, captured before the order phase and reconciled against the final quote/order. That partner must also be represented in Associated accounts. '
@@ -39,9 +32,7 @@ PARTNERS = ('Extend the existing Opportunity Partner Opportunity Influence / Ass
 DEPLOY = ('Extend the existing Stage 7 coordinating deployment Case handoff: derive hardware/software/both from Opportunity Products and transfer it with applicable acceptance-testing requirements, support/start/end dates, logistics and licensing information. '
           'OM and GSS record confirmation that the in-scope delivery is on-site and working on the deployment Case. Keep receipt, working deployment, contractual acceptance and value realization distinct. '
           'Record actual events when they occur; later deployment evidence must not delay booking. Reuse the existing Case on retry/re-entry.')
-STATUS = ('Use Order Review Status with default New Order (no sub-status); In Progress / In Progress; Rejected / PO Rejected, Incomplete Stage Information, Both PO & Stage Information, or Other with Comments; '
-          'Booked / Booked with no Exceptions, Booked with Booking Policy Exceptions, or Booked with Exceptional Approvals. Adapt PO rejection labels to cover the customer commitment document on contract-only orders. '
-          'Map historical values into the two-tier model. A Booked label does not replace OM reconciliation or exception approval. Only the explicit rejection action returns 6 → 5; other status edits do not automatically change stages.')
+STATUS = 'Use Order Review Status with default New Order (no sub-status); In Progress / In Progress, Pending Legal Review, Pending DD Review or Pending System Issue; Rejected / Customer Commitment Rejected, Incomplete Stage Information, Both Customer Commitment & Stage Information or Other; Booked / Booked or Booked with Exceptional Approvals. Require explanatory notes for every rejection reason and an OM-group reviewer when In Progress. Map historical PO rejection values to the customer commitment labels without losing history. Require Rejected plus reason/notes for 6 → 5 and Booked plus OM reconciliation and applicable exception approvals for 6 → 7. A status edit alone must not move the stage.'
 HISTORY_STOP = ['Tracking Number', 'Invoice Date', 'Last Modified by Owner', 'AE Next Steps', 'Description', 'Forecast Category (standard)', 'Stage', 'SAL Completion Date', 'SAL Influence', 'Lead Source', 'PO In-House', 'POC Status']
 HISTORY = ('Stop future field-history tracking for: '+', '.join(HISTORY_STOP)+'. Keep the fields and all history already recorded. '
            'Retain tracking for Amount, Close Date, Opportunity Owner, Opportunity Name, Opportunity Source, SAL Status and Primary Quote. Add Technical Outcome, Transacting Partner (existing Primary Partner field) and Territory; confirm the exact Territory field. '
@@ -60,7 +51,7 @@ PARTNER_CREDIT = ('Record exactly one contribution category per partner–opport
 REVISED = {
  8: ('Approve POCs through both managers while retaining separate evaluation completion evidence.', POC, 'Reuse existing POC controls and preserve history; capture separate completion evidence in an open-ended text field.', 'Add dual-manager approval; replace the proposed status presentation without removing completion evidence.'),
  11: ('Accept a complete, matched customer commitment and final Primary Quote before Won Decision.', COMMITMENT+' '+MEDIA+' '+LOGISTICS, 'Retain Stage 4 Primary Quote; change Stage 5 exit validation and upload prompts.', 'Allow qualifying contract-only commitments and tighten final quote/document matching.'),
- 13: ('Give OM a reconciled order and an explicit rejection path before booking.', 'Only authorized OM accepts 6 → 7 after reconciliation. '+REJECTION, 'Booked protections and the existing Case handoff remain.', 'Add OM rejection 6 → 5, notes, audit and Opportunity team/RevOps notifications.'),
+ 13: ('Give OM a reconciled order and an explicit rejection path before booking.', 'Only authorized OM accepts 6 → 7 after reconciliation. '+REJECTION, 'Booked protections and the existing Case handoff remain.', 'Add OM rejection 6 → 5, notes, audit and opportunity owner/Sales Ops notifications, plus OM resubmission alerts.'),
  17: ('Extend the Stage 7 deployment Case handoff with product and acceptance information.', DEPLOY, 'Case creation/linking and retry deduplication already exist; extend them.', 'Transfer product classification, testing and start/end information; record on-site and working confirmation.'),
  21: ('Make every participating account’s roles and contribution reportable on the existing association.', PARTNERS, 'Use the existing object and the contribution rules in BR-SS-150.', 'Structure additional roles and per-partner contribution instead of relying only on narrative.'),
  23: ('Require NVIDIA engagement at Stage 2 and make GPU opportunity data visible and reportable.', NVIDIA, 'Add engagement, contact and GPU views to leader click-through, pipeline/forecast reports and the NVIDIA dashboard; show pipeline, bookings and GPU demand by type, region, segment and sales team.', 'Replace association-only requiredness with Stage 2/dropdown-driven validation; expand summary and reporting.'),
@@ -87,7 +78,7 @@ REVISED = {
 NEW = [
  (133,'Stage decision-makers','Select decision-maker Contacts and satisfy Contact Roles before exiting Stages 3 and 4.',DECISION_MAKERS,'Confirmed'),
  (134,'Renewal procurement','Add Stage 5 Procurement to the renewal sales process.','Renewals can progress 4 → 5 → 6, with Stage 5 in Commit; retain valid renewal-specific gates.','Confirmed'),
- (135,'Backward stage authority','Restrict backward moves from Won Decision and Closed Won.',PERMISSIONS,'Confirmed'),
+ (135,'Stage change authority','Give OM exclusive stage-change authority from Stages 6 and 7.',PERMISSIONS,'Confirmed'),
  (136,'Close Date ownership','Give OM Close Date ownership and restrict post-booking changes.',CLOSE_DATE,'Confirmed'),
  (137,'Quote installation location','Capture whether installation location differs from shipping.','On final quotes, require Installation Location when it differs from shipping. Budgetary quotes are exempt. Reuse existing location storage where suitable.','Confirmed'),
  (138,'Media/docs fulfillment','Capture Digital/Physical fulfillment separately from IPG.',MEDIA,'Confirmed'),
@@ -117,24 +108,24 @@ def revise(data):
 def requirements(data):
     result=revise(data)
     for n,area,req,accept,status in NEW:
-        result.append(['RevOps / Colin Brown',f'BR-SS-{n:03}',area,req,'October 19 consolidated review','','Pending decision' if status=='Pending' else 'Must Have','Relevant process owner',accept,'No live Salesforce configuration in this website release.','Pending proposals are not active stage gates.' if status=='Pending' else 'Reuse existing fields and mechanisms; implement only the gap.'])
+        result.append(['RevOps / Colin Brown',f'BR-SS-{n:03}',area,req,'October 21 consolidated review','','Pending decision' if status=='Pending' else 'Must Have','Relevant process owner',accept,'No live Salesforce configuration in this website release.','Pending proposals are not active stage gates.' if status=='Pending' else 'Reuse existing fields and mechanisms; implement only the gap.'])
     result[0] += ['Change type','Change date','Decision status','Net change']
     new={n:(req,status) for n,_,req,_,status in NEW}
     for row in result[1:]:
         n=int(row[1][-3:])
         if n in REVISED: row += ['Revised',DATE,'Confirmed',REVISED[n][3]]
         elif n in new: row += ['Added',DATE,new[n][1],new[n][0]]
-        else: row += ['Existing','','Existing baseline','No October 19 scope change.']
+        else: row += ['Existing','','Existing baseline','No October 21 scope change.']
     return result
 
 def csv_requirements(data):
     """Lead with readable change labels; preserve every canonical requirement column."""
     labels={'Added':'New','Revised':'Revised','Existing':'Unchanged'}
-    return [['October 19 change','Net change','Change date','Decision status']+data[0][:11]]+[
+    return [['October 21 change','Net change','Change date','Decision status']+data[0][:11]]+[
         [labels[row[11]],row[14],row[12],row[13]]+row[:11] for row in data[1:]
     ]
 
-def field(name,kind,inputs,purpose,previous='Existing capture / reuse to confirm',change='Revised · 19 Oct'):
+def field(name,kind,inputs,purpose,previous='Existing capture / reuse to confirm',change='Revised · 21 Oct'):
     return '<tr data-field="'+E(name)+'"><td><strong>'+E(name)+'</strong><small>'+E(kind)+'</small></td><td>'+E(inputs)+'</td><td>'+E(previous)+'</td><td><span class="change-tag">'+E(change)+'</span></td><td>'+E(purpose)+'</td></tr>'
 
 def update_field(page,name,kind,inputs,purpose,newname=None):
@@ -160,12 +151,12 @@ POLICY_ROWS = [
  ('Prepare the package','Sales supplies the approved final Primary Quote and the PO, fully executed contract or both as Opportunity Files. A contract can stand alone if a PO is not a condition. Reconcile customer legal entity, bill-to, ship-to/install details, products/SKUs, quantities, categories, prices, currency, payment terms, dates and applicable delivery/support terms across the package.'),
  ('PO formats','Itemized and category-subtotal POs must tie to the approved Primary Quote. A quote-referenced PO needs the quote reference and customer-returned quote PDF. A reference does not cure conflicting terms or incorrect details; obtain the required correction or written confirmation and any formal amendment.'),
  ('Approvals before submission','Complete applicable Deal Desk, Legal and Finance approvals before Won Decision submission. POC manager approval is not approval of customer acceptance language. Payment/prepayment terms must be agreed consistently; apply the separate Prepayment Policy. Complete applicable trade/partner compliance review.'),
- ('OM review and rejection','OM independently accepts, holds or rejects the package. Rejection returns Stage 6 to Stage 5 with notes to the Opportunity team and RevOps. Correct and resubmit the complete package; OM cannot waive another function’s approval.'),
+ ('OM review and rejection','OM independently accepts, holds or rejects the package. Rejection returns Stage 6 to Stage 5 with notes to the opportunity owner and Sales Ops. Correct and resubmit the complete package; OM cannot waive another function’s approval.'),
  ('Booking value and currency','Finance determines eligible legally committed value; exclude uncommitted options, estimated consumption and other discretionary future purchases, and excluded taxes/freight/pass-through items under the policy. Committed multi-year amounts and phases qualify only to their binding extent. Quotes, bookings and invoices use USD; approved local-currency payment must satisfy the USD obligation and Deal Desk FX treatment.'),
  ('Channel orders','Assess the actual bill-to partner’s binding obligation and governing agreement, including return, stock rotation, price protection and cancellation rights. End-customer order/payment contingencies must be satisfied. Finance approval applies to qualifying unidentified-end-customer stocking and DDN-arranged/guaranteed financing. Follow supplemental Deal Desk channel requirements; otherwise obtain the specified agreement-rights confirmation.'),
  ('Support, subscriptions and acceptance','Shipment orders normally start support on shipment; software-only terms follow the approved quote and commitment. Renewals begin after the existing term; auto-renewals book only when the non-renewal window expires and the term is irrevocably committed. Nonstandard starts need Deal Desk approval. Acceptance-based starts require an approved event and contractual not-to-exceed date.'),
- ('Period-end cutoff','11:59 p.m. Pacific Time on the final calendar day of the reporting period; no grace period or backdating. The complete compliant package, required approvals and substantive conditions must be satisfied by cutoff. Later administrative OM processing does not change eligibility; later substantive completion or compliant resubmission belongs to the next open period. The 24-hour OM target is not a grace period.'),
- ('Booking Date versus Close Date','Official Booking Date and period attribution follow the complete compliant submission accepted by OM and Finance policy. Do not use the opportunity’s expected or locked Close Date as independent proof of eligibility. Booking is distinct from revenue recognition, billing and ARR.'),
+ ('Period-end cutoff','11:59 p.m. Pacific Time on the final calendar day of the reporting period; no grace period or backdating. The complete compliant package, required approvals and substantive conditions must be satisfied by cutoff. Close Date records the OM acceptance/booking date; do not backdate it to an earlier incomplete submission. Finance owns any policy-period exception treatment. The 24-hour OM target is not a grace period.'),
+ ('Booking Date / Close Date','Close Date is the Booking Date and is set to OM’s acceptance date at Stage 7. Keep any separate booking-date storage aligned. Booking remains distinct from revenue recognition, billing and ARR.'),
  ('After booking','Commercial changes require appropriate customer documents, a revised Primary Quote and Deal Desk/other required approvals. OM determines correction, amendment, cancellation or de-book/rebook treatment. Preserve the original booking and audit trail; book only incremental eligible value, avoid double counting and record resulting value changes in the current open period unless Finance approves a correction.'),
  ('Exceptions and ownership','Each functional owner approves within delegated authority before booking; cross-functional exceptions need each owner. Definition, value and period exceptions require the specified senior Finance authority. Record approval, rationale and evidence in Salesforce. No exception permits an unenforceable commitment or backdating. A validation bypass is not a policy exception approval.'),
 ]
@@ -185,7 +176,7 @@ def simple_table(headers,rows):
     return '<div class="field-register-wrap"><table class="field-register"><thead><tr>'+''.join('<th scope="col">'+E(x)+'</th>' for x in headers)+'</tr></thead><tbody>'+''.join('<tr>'+''.join('<td>'+E(x)+'</td>' for x in row)+'</tr>' for row in rows)+'</tbody></table></div>'
 
 def policy_content():
-    return '<p>Process reference based on DDN Global Bookings Policy v1 supplied for the October 19 review. This guidance does not turn every policy clause into a Salesforce field or stage gate. Finance owns policy interpretation; use the controlled policy and Bookings Procedure for execution.</p>'+simple_table(['Topic','Booking guidance'],POLICY_ROWS)+'<p>Related process references: Bookings Procedure, Prepayment Policy, Deal Desk Playbook, Revenue Recognition Policy and Sales Compensation Plan. Their controlled links and the final policy version/effective date should be supplied by their owners; the reviewed copy contains draft/version placeholders.</p>'
+    return '<p>Process reference based on DDN Global Bookings Policy v1 supplied for the October 21 review. This guidance does not turn every policy clause into a Salesforce field or stage gate. Finance owns policy interpretation; use the controlled policy and Bookings Procedure for execution.</p>'+simple_table(['Topic','Booking guidance'],POLICY_ROWS)+'<p>Related process references: Bookings Procedure, Prepayment Policy, Deal Desk Playbook, Revenue Recognition Policy and Sales Compensation Plan. Their controlled links and the final policy version/effective date should be supplied by their owners; the reviewed copy contains draft/version placeholders.</p>'
 
 # Explicit replacements remove superseded wording rather than appending contradictions.
 def normalize(text):
@@ -209,8 +200,8 @@ def normalize(text):
       'Require a secured PO and the actual PO attachment before Stage 6.':COMMITMENT,
       'secured PO with the actual PO File':'binding PO/contract package matched to the approved final Primary Quote',
       'secured/attached PO':'binding PO/contract and approved final Primary Quote',
-      'PO Secured and PO Attachment':'Customer Commitment Secured and Customer Commitment Files',
-      'PO Secured':'Customer Commitment Secured',
+      'PO Secured and PO Attachment':'Customer Commitment and Customer Commitment Files',
+      'PO Secured':'Customer Commitment',
       'PO Attachment':'Customer Commitment Files',
       'booked PO':'booked order',
       'Book the PO;':'Book the order;',
@@ -236,12 +227,12 @@ def system(page):
     specs=[
       ('NVIDIA Engagement','Existing picklist','Validated engagement values',NVIDIA,None),
       ('POC Status','Approval checkbox','Checked only after both managers approve',POC,'POC Approved'),
-      ('Customer Commitment Secured','Existing PO control; adapt label/validation','PO, qualifying signed contract, or both',COMMITMENT,None),
+      ('Customer Commitment','Existing PO control; adapt label/validation','PO, qualifying signed contract, or both',COMMITMENT,None),
       ('Customer Commitment Files','Salesforce Files','Sales uploads governing documents',COMMITMENT,None),
       ('Order Review Status','Status + sub-status','New Order / In Progress / Rejected / Booked',STATUS,None),
     ]
     for args in specs:page=update_field(page,*args)
-    page=update_field(page,'NVIDIA Engagement Status','Legacy mapping to confirm','No additional approved gate','The October 19 requirement uses the validated NVIDIA Engagement dropdown. Do not create a second required status field. Confirm whether a separate legacy field exists and preserve its data; any separate validation requires an explicit mapping decision.')
+    page=update_field(page,'NVIDIA Engagement Status','Legacy mapping to confirm','No additional approved gate','The October 21 requirement uses the validated NVIDIA Engagement dropdown. Do not create a second required status field. Confirm whether a separate legacy field exists and preserve its data; any separate validation requires an explicit mapping decision.')
     for name,kind in [('GPU Type','Existing picklist'),('GPU Quantity','Existing number'),('Project Type','Existing picklist')]:
         page=update_field(page,name,kind,'Required when NVIDIA engaged; otherwise available','Show in the Opportunity summary for every deal. Require when NVIDIA Engagement is anything other than Not Engaged, including later engagement changes; otherwise leave visible/editable and preserve the value.')
     page=update_field(page,'IPG Finalized','Existing disposition','Completed / Not Required',LOGISTICS)
@@ -269,8 +260,8 @@ def system(page):
     page=add_fields(page,'ongoing-nvidia-detail',[field('NVIDIA Contacts / Roles','Existing Opportunity Contact Roles preferred','Multiple contacts and NVIDIA-specific roles','Require when NVIDIA is engaged; support reporting across opportunities. Map Sales Representative, Technical Lead and Partner Lead into the existing role model before configuration.')])
     page=add_fields(page,'s2',[field('NVIDIA Engagement','Existing picklist','Required on entry to Stage 2',NVIDIA),field('POC Approved','Approval checkbox','AE Manager + SE Manager',POC)])
     for id in ['s2','ongoing-poc-detail']:
-        page=add_fields(page,id,[field('POC Completion Evidence','Open-ended long text','Completed or Cancelled outcome and supporting evidence',POC,change='Added · 19 Oct')])
-    page=add_fields(page,'ongoing-partners-detail',[field('Partner Contribution Category','Single-select on existing partner–opportunity association','Sourced / Influenced / Fulfilled',PARTNER_CREDIT,change='Added · 19 Oct')])
+        page=add_fields(page,id,[field('POC Completion Evidence','Open-ended long text','Completed or Cancelled outcome and supporting evidence',POC,change='Added · 21 Oct')])
+    page=add_fields(page,'ongoing-partners-detail',[field('Partner Contribution Category','Single-select on existing partner–opportunity association','Sourced / Influenced / Fulfilled',PARTNER_CREDIT,change='Added · 21 Oct')])
     for id in ['s4','s5']:
         page=add_fields(page,id,[field('Documentation / media fulfillment','Digital / Physical','Digital requires fulfillment email',MEDIA)])
     page=add_fields(page,'s5',[field('Final Primary Quote','Existing CPQ relationship','Approved final quote before exit',COMMITMENT)])
@@ -289,12 +280,7 @@ def system(page):
     page=append_to(page,'ongoing-partners-detail','<h4>Partner-flow examples</h4>'+simple_table(['Motion','How to represent the deal'],SCENARIOS),'article')
     page=append_to(page,'s7',note(PERMISSIONS))
     page=append_to(page,'s6',note('OM review fields are visible to reps and editable only by authorized OM. Require an OM-group reviewer when In Progress. Report Stage 6 → 7 against the 24-hour target using transition history; the policy cutoff remains separate.'))
-    # Add the general knowledge and audit decisions before implementation.
-    marker='<section class="stage" id="implementation-requirements">'
-    sections='<section class="stage" id="booking-an-order"><header class="stagehead"><div><p class="label">Process reference · 19 October 2026</p><h2>Booking an Order</h2></div></header><div class="body">'+policy_content()+'</div></section>'
-    sections+='<section class="stage" id="october-decisions"><header class="stagehead"><div><p class="label">Implementation preparation</p><h2>History and rollout</h2></div></header><div class="body"><h3>Field-history allocation</h3><p>'+E(HISTORY)+'</p><h3>Rollout</h3><p>Communicate the new requirements in advance. RevOps backfills trustworthy existing information, identifies owner actions and avoids fabricated evidence. Mark the deployed win/loss taxonomy as existing; provide fields and value crosswalks for historical mapping.</p></div></section>'
-    page=page.replace(marker,sections+marker,1)
-    page=page.replace('<a href="#change-log">Change log</a>','<a href="#booking-an-order">Booking an Order</a><a href="#october-decisions">History and rollout</a><a href="#change-log">Change log</a>',1)
+    page=append_to(page,'order-current-state','<div id="booking-an-order"><h4>Booking an Order: process reference</h4>'+policy_content()+'</div>','article')
     # One-slide summary: retain layout and link the new fields to their detail.
     row=re.search(r'<tr><th scope="row" class="slide-row-label">Fields<small>.*?</tr>',page,re.S)[0]
     cells=re.findall(r'<td class="slide-fields">.*?</td>',row,re.S)
@@ -310,7 +296,7 @@ def system(page):
 
 def release_log(data):
     rows=[r for r in data[1:] if r[12]==DATE]
-    out='<details class="audit-group change-group release-group" id="changes-2026-10-19"><summary>'+TITLE+'<span>'+str(len(rows))+' added / revised requirements</span></summary><p>Compared with the pre-October 19 website scope. Existing BR IDs are retained. The resolved business decisions are incorporated; withdrawn proposals are excluded from this release. The implementation table and CSV carry the same date, change type, decision status and net-change description.</p>'
+    out='<details class="audit-group change-group release-group" id="changes-2026-10-21"><summary>'+TITLE+'<span>'+str(len(rows))+' added / revised requirements</span></summary><span id="changes-2026-10-19"></span><p>Compared with the pre-October 19 website scope; consolidated through October 21. Existing BR IDs are retained. The resolved business decisions are incorporated; withdrawn proposals are excluded from this release. The implementation table and CSV carry the same date, change type, decision status and net-change description.</p>'
     out+='<div class="field-register-wrap"><table class="release-table"><thead><tr>'+''.join('<th scope="col">'+h+'</th>' for h in ['Requirement','Change','Decision','Net change'])+'</tr></thead><tbody>'
     for r in rows:
         out+='<tr class="'+row_class(r)+'" data-requirements="'+r[1]+'"><td><a href="#requirement-'+r[1]+'">'+r[1]+'</a> · '+E(r[2])+'</td><td>'+E(r[11])+'</td><td>'+E(r[13])+'</td><td>'+E(r[14])+'</td></tr>'
@@ -320,7 +306,7 @@ def row_class(row):
     return 'release-pending' if row[13]=='Pending' else ('release-'+row[11].lower())
 
 def toolbar():
-    return '<div class="release-tools"><p><strong>October 19 changes:</strong> <span class="release-key release-added">Added</span> <span class="release-key release-revised">Revised</span>. Unshaded rows are existing scope. Color is reinforced by the change/status columns.</p><label for="requirement-release-filter">Show requirements </label><select id="requirement-release-filter"><option value="all">All requirements</option><option value="latest">October 19 additions and revisions</option><option value="added">Added October 19</option><option value="revised">Revised October 19</option></select><p id="requirement-release-count" role="status" aria-live="polite"></p><p><a href="downloads/october-19-requirements.csv" download="GTM-October-19-Requirements.csv">Download October 19 changes only (CSV)</a></p><p>Both CSV downloads start with <strong>October 19 change</strong>: <strong>New</strong>, <strong>Revised</strong> or <strong>Unchanged</strong>. The next column, <strong>Net change</strong>, explains the change. Filter the first column to review changes without relying on color.</p></div>'
+    return '<div class="release-tools"><p><strong>October 21 changes:</strong> <span class="release-key release-added">Added</span> <span class="release-key release-revised">Revised</span>. Unshaded rows are existing scope. Color is reinforced by the change/status columns.</p><label for="requirement-release-filter">Show requirements </label><select id="requirement-release-filter"><option value="all">All requirements</option><option value="latest">October 21 additions and revisions</option><option value="added">Added October 21</option><option value="revised">Revised October 21</option></select><p id="requirement-release-count" role="status" aria-live="polite"></p><p><a href="downloads/october-21-requirements.csv" download="GTM-October-21-Requirements.csv">Download October 21 changes only (CSV)</a></p><p>Both CSV downloads start with <strong>October 21 change</strong>: <strong>New</strong>, <strong>Revised</strong> or <strong>Unchanged</strong>. The next column, <strong>Net change</strong>, explains the change. Filter the first column to review changes without relying on color.</p></div>'
 
 def assets(page):
     return page.replace('</head>','<link rel="stylesheet" href="assets/october.css"><script src="assets/october.js" defer></script></head>',1)
@@ -357,14 +343,14 @@ def learning(modules,design,definitions,examples,stages):
     lesson('procurement','Procurement assembles the approved final Primary Quote and matching binding customer commitment before Won Decision.',
       ['A qualifying executed contract can satisfy commitment without a PO.','Sales attaches governing documents as Opportunity Files, matched to the final approved Primary Quote.','Renewals include Stage 5 Procurement and may remain in Commit.'],
       'A customer signs a binding contract matching the final approved Primary Quote. The contract does not require a PO.',
-      ['Confirm the quote — Retain Stage 4 Primary Quote and require an approved final Primary Quote before leaving Stage 5.','Attach the commitment — Upload the PO, qualifying executed contract or both; identify the matching governing quote.','Complete applicable fulfillment — Record Digital/Physical and a Digital email, plus applicable IPG and delivery requests. Software-only is exempt from hardware logistics.','Submit or correct — Advance to Won Decision when complete. OM rejection returns to Procurement with notes for the Opportunity and RevOps teams.'],
+      ['Confirm the quote — Retain Stage 4 Primary Quote and require an approved final Primary Quote before leaving Stage 5.','Attach the commitment — Upload the PO, qualifying executed contract or both; identify the matching governing quote.','Complete applicable fulfillment — Record Digital/Physical and a Digital email, plus applicable IPG and delivery requests. Software-only is exempt from hardware logistics.','Submit or correct — Advance to Won Decision when complete. OM rejection returns to Procurement with notes for the opportunity owner and Sales Ops.'],
       'The opportunity cannot advance until a PO exists.','The executed contract establishes the obligation without a PO condition; Sales uploads it and the matching approved final Primary Quote.',
       'Is a PO always required?','No. A qualifying executed contract can suffice if a PO is not a condition of the binding obligation; the approved final Primary Quote is still required.','Submit a complete matched commitment package, including the contract-only path.')
     lesson('booking','OM independently reviews the complete commitment package, accepts booking or returns a rejected submission from Stage 6 to Stage 5.',
-      ['Review the matched approved quote and PO/contract package.','Reject with explanatory notes to the Opportunity team and RevOps.','OM owns Close Date confirmation; it locks at Closed Won and only a System Administrator can change it afterward.'],
+      ['Review the matched approved quote and PO/contract package.','Reject with explanatory notes to the opportunity owner and Sales Ops.',CLOSE_DATE],
       'OM finds the signed contract quantity differs from the approved Primary Quote near period end.',
       ['Review the package — Check the binding commitment, matching terms and applicable recorded approvals under Booking an Order guidance.','Accept or reject — OM accepts 6 → 7 only after reconciliation; reject 6 → 5 with notes, history and notifications.','Protect booking and hand off — Confirm OM reviewer, book, lock Close Date and start/link one coordinating Case for GSS.','Respect cutoff and later changes — Complete compliant submission must meet the policy cutoff; post-booking changes follow authorized treatment. The 24-hour target adds no grace period.'],
-      'Mark Booked now and fix the documents later.','OM rejects to Stage 5, explains the quantity mismatch, notifies the Opportunity team and RevOps, then reviews the corrected complete resubmission.',
+      'Mark Booked now and fix the documents later.','OM rejects to Stage 5, explains the quantity mismatch, notifies the opportunity owner and Sales Ops, then reviews the corrected complete resubmission.',
       'Does a rejected early submission preserve the closing period?','No. Period eligibility depends on the complete compliant resubmission, not the first attempt.','Keep booking review, correction and policy timing supported by evidence.')
     lesson('partner-accounts','The existing Associated accounts records show each participant’s commercial position, structured roles and contribution evidence on an opportunity.',
       ['Reuse the existing Opportunity association mechanism; preserve Account relationships.','Separate bill-to, downstream partner and underlying customer.','Make multiple contributions reportable without duplicating opportunity value.'],
@@ -385,11 +371,11 @@ def learning(modules,design,definitions,examples,stages):
     design['partner-credit']['takeaway']+=' '+PARTNER_CREDIT
     definitions['partner-credit'] += ' '+PARTNER_CREDIT
     lesson('next-steps','Keep AE and SE next actions current and expected timing visible; OM owns Close Date confirmation and the booked date locks at Stage 7.',
-      ['Continue the existing weekly AE and SE next-action reviews.','OM confirms Close Date at booking.','Only a System Administrator may change the locked Closed Won Close Date.'],
+      ['Continue the existing weekly AE and SE next-action reviews.','OM confirms Close Date at booking.','From Stage 6 onward only OM may edit Close Date; booking and Close Date are synonymous.'],
       'A delivery slips after booking and a seller proposes moving the booked Close Date.',
-      ['Maintain open-deal actions — Record the next customer action and review expected timing through the existing forecast process.','Keep reviews distinct — AE and SE review their respective next actions; unrelated edits do not refresh the timestamps.','Confirm the booking date — OM confirms Close Date, which locks at Closed Won.','Record delivery changes correctly — Update authorized Order/Case logistics; do not move the locked date. Admin corrections retain audit evidence.'],
+      ['Maintain open-deal actions — Record the next customer action and review expected timing through the existing forecast process.','Keep reviews distinct — AE and SE review their respective next actions; unrelated edits do not refresh the timestamps.','Confirm the booking date — OM confirms Close Date, which locks at Closed Won.','Record delivery changes correctly — Update authorized Order/Case logistics; do not move the locked date. OM corrections retain audit evidence.'],
       'Move Close Date to the new delivery date.','Keep the booked Close Date locked and revise the delivery plan on the Order/Case.',
-      'Can Sales Ops or OM edit Close Date after Closed Won?','Only a System Administrator can change it after the lock. OM owns its booking confirmation.','Keep forecast upkeep separate from protected booked dates.')
+      'Can Sales Ops or OM edit Close Date after Closed Won?','Only OM may edit Close Date from Stage 6 onward, including after booking; preserve the audit trail.','Keep forecast upkeep separate from protected booked dates.')
     # Extend existing lessons without duplicating their complete baseline content.
     additions={
       'buying-committee':DECISION_MAKERS+' The Opportunity MEDDPICC view brings existing evidence together.',
@@ -423,7 +409,7 @@ def learning(modules,design,definitions,examples,stages):
     definitions.update({
       'term-poc-status':'Legacy status capture is replaced in the presentation by POC Approved. Document the Completed or Cancelled outcome in the separate open-ended POC Completion Evidence text field before a required POC progresses beyond Stage 2.',
       'term-po-secured-po-attachment':COMMITMENT,
-      'term-nvidia-engagement-status':'Legacy mapping to confirm. The approved requirement uses NVIDIA Engagement; no separate required status field is added by the October 19 changes.',
+      'term-nvidia-engagement-status':'Legacy mapping to confirm. The approved requirement uses NVIDIA Engagement; no separate required status field is added by the October 21 changes.',
       'term-ipg-finalized':LOGISTICS,
       'term-nvidia-engagement':NVIDIA,
       'term-transacting-partner':TRANS,
@@ -445,19 +431,23 @@ def permissions_config(admin):
     admin.FIELDS=[(a,b,c.replace('OM booking and validation bypass','OM booking')) for a,b,c in admin.FIELDS]
     admin.FIELDS.append(('Administrative exceptions','System Administrator discretion','Any validation-bypass mechanism is an optional System Administrator implementation choice, not a Sales Ops entitlement or business requirement. It does not replace booking-policy approval.'))
     admin.FIELDS.extend([
-      ('Opportunity · stage movement','Existing Sales / SE progression; delegated operations',PERMISSIONS),
-      ('Opportunity · Close Date','OM confirmation; System Administrator after lock',CLOSE_DATE),
-      ('Opportunity · OM section','Authorized OM edits; reps read','Require an OM-group User reviewer in In Progress. Rejection notes are required and visible to the Opportunity team and RevOps; the OM rejection action returns 6 → 5.'),
+      ('Opportunity · stage movement','Sales / Sales Ops through 5; OM from 6',PERMISSIONS),
+      ('Opportunity · Close Date','Owner / Sales Ops before 6; OM from 6',CLOSE_DATE),
+      ('Opportunity · OM section','Authorized OM edits; reps read','Require an OM-group User reviewer in In Progress. Rejection notes are required and visible to the opportunity owner and Sales Ops; the OM rejection action returns 6 → 5.'),
       ('Opportunity · POC Approved','Approval workflow after AE Manager and SE Manager approve','Retain both approval actors/times. Sellers cannot self-check approval. Completion/cancellation evidence stays separate from approval.'),
       ('Opportunity · decision-maker Contacts','Existing permitted Sales / SE stage flow',DECISION_MAKERS),
       ('Opportunity · POC Completion Evidence','Sales Engineering / authorized deal collaborators','Maintain open-ended completion/cancellation evidence separately from manager approval; require it before a required POC exits Stage 2.'),
       ('Opportunity · ERP Status / Invoice Reference','Designated Oracle integration','ERP Status is read-only for business users; synchronize invoice references without bypassing booked Close Date protection.'),
     ])
-    admin.FIELDS=[(a,b,c.replace('Protect booked Close Date, Amount, Products and attribution.','Protect booked Amount, Products and attribution. Close Date uses the stricter System Administrator-only post-lock correction rule below.')) for a,b,c in admin.FIELDS]
+    admin.FIELDS=[(a,b,c.replace('Protect booked Close Date, Amount, Products and attribution.','Protect booked Amount, Products and attribution. Close Date is OM-only from Stage 6, including after booking.')) for a,b,c in admin.FIELDS]
     admin.RELATED=[(a,b.replace('PO, quote,','PO/contract, quote,'),c.replace('Confirm a real PO File is accessible to OM;','Sales attaches the governing PO/contract Files and matched approved Primary Quote; ensure OM can access the package;')) for a,b,c in admin.RELATED]
     admin.TESTS.extend([
-      ('OM rejection / backward moves','OM can reject 6 → 5 only with notes and notifications to the Opportunity team and RevOps. Other backward moves from 6/7 require System Administrator or Sales Ops; normal permitted seller forward progression needs no Sales Ops handoff.'),
-      ('Close Date lock','At Stage 7 only System Administrator can correct Close Date; OM, Sales Ops, sellers and ordinary integrations are denied. Regression must not bypass the lock; authorized invoice/delivery writes still work.'),
+      ('OM rejection / backward moves','OM can reject 6 → 5 only with notes and notifications to the opportunity owner and Sales Ops. Only OM may move out of Stages 6/7 in any direction. Sales and Sales Ops manage 0–5. Direct 0–5 → 7 moves fail.'),
+      ('Close Date lock','Before 6, owner and Sales Ops can edit Close Date; from 6 onward OM alone may edit it. At 7 it equals the OM acceptance/booking date. Stage regression and integrations must not overwrite it; authorized invoice/delivery writes still work.'),
       ('POC approvals and NVIDIA changes','One manager approval cannot check POC Approved. Approved but incomplete required POC still blocks progression. Later engagement changes require NVIDIA contacts and GPU/project data; Not Engaged retains editable GPU fields.'),
       ('Contract-only package','A qualifying signed contract with a matching approved final Primary Quote can pass without a PO; a contract contingent on a PO cannot. Sales uploads Files and OM can inspect them.'),
     ])
+
+# Apply the October 21 decisions within the consolidated October release.
+from october21_updates import configure
+configure(globals())

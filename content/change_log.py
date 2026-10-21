@@ -11,11 +11,11 @@ GROUPS=[
 EXPLICIT={
  'fields':[8,18,37,41,110,112,113,114,115,116,131],
  'rename':[21,30,118], 'move':[26,111], 'inputs':[33,39,119],
- 'automation':[2,13,15,17,19,20,22,24,32,35,109,120,121,126,130,132],
+ 'automation':[2,13,15,17,19,20,22,24,32,35,58,109,120,121,126,130,132],
  'validation':[3,4,5,6,7,9,10,11,23,25,34,104,122,123]}
 RENAME_FROM={43:'Why DDN',44:'SE User',45:'Solution',47:'Economic Justification',48:'Procurement (Close Plan)',49:'Sharepoint Links',50:'IPG Finalized and submitted',51:'SE Next Steps',52:'Budget holder',56:'PO Processing Status',67:'Order No.',68:'Invoice #',69:'PS Case',72:'Primary Partner',77:'Partner',79:'Description (Influence)',80:'Partner Stage (Influence)',81:'Primary Contact (Partner)',82:'Technical Contact (Partner)',89:'Reason Lost',90:'Lost Reason Explanation',91:'If Primary Competition is Other, Fill:'}
 LABELS={43:'Identify Pain',44:'Primary SE',45:'Technical Value',47:'Business Value',48:'Paper Process',49:'SharePoint Link',50:'IPG Finalized',51:'Sales Engineer Next Steps',52:'Economic Buyer',56:'Order Review Status',67:'Sales Order Reference',68:'Invoice Reference',69:'Deployment Case Link',72:'Transacting Partner',77:'Associated Account',79:'Association Description / Plan',80:'Association Engagement Status',81:'Association Sales Contact',82:'Association Technical Contact',89:'Loss Reason',90:'Loss Reason Details',91:'Competitor Detail (if Other)'}
-LABELS.update({54:'Estimated Shipping Date',55:'Requested Delivery Date',74:'POC Approved',86:'OK to Interview (Win/Loss)?',87:'Contact for Win/Loss Interview',88:'WL Reason Cannot Approach',100:'Role On Deal'})
+LABELS.update({58:'Value Tracking Start Date',54:'Estimated Shipping Date',55:'Requested Delivery Date',74:'POC Approved',86:'OK to Interview (Win/Loss)?',87:'Contact for Win/Loss Interview',88:'WL Reason Cannot Approach',100:'Role On Deal'})
 
 def category(row):
  n=int(row[1].split('-')[-1]);req=row[3]
