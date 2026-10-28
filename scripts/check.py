@@ -309,3 +309,30 @@ for page in ['index.html','enablement.html','definitions.html','permissions.html
                   'Booked with no Exceptions','Close Date and the policy’s official Booking Date are distinct']:
         assert stale not in text,(page,stale)
 print('PASS: October 21 lifecycle, booking/commitment controls, logistics, notification timing and aligned legacy download.')
+
+# The operations playbook is a draft around the approved foundation, not a second requirements baseline.
+from gtm_processes import PROCESSES, QUESTIONS, PHASES
+processes=(ROOT/'processes.html').read_text()
+assert len(PROCESSES)==34 and len(QUESTIONS)==49 and len(PHASES)==6
+assert len({p['id'] for p in PROCESSES})==len(PROCESSES)
+assert len({q[0] for q in QUESTIONS})==len(QUESTIONS)
+assert all(q[1] in {p['id'] for p in PROCESSES} for q in QUESTIONS)
+assert {p['phase'] for p in PROCESSES}=={key for key,_,_ in PHASES}
+for p in PROCESSES:
+    assert all(p[k] for k in ['trigger','goal','lead','partners','approved','inputs','steps','inspect','exception','metrics','handoff','refs']),p['id']
+    assert all('Stage 8' not in text for text in p['approved']),p['id']
+    assert len(p['steps'])==4,p['id']
+assert set(re.findall(r'data-process="([^"]+)"',processes))=={p['id'] for p in PROCESSES}
+register=processes.split('<section class="question-register"',1)[1]
+assert re.findall(r'data-question="([^"]+)"',register)==[q[0] for key,_,_ in PHASES for q in QUESTIONS if next(p['phase'] for p in PROCESSES if p['id']==q[1])==key]
+assert not re.search(r'<details class="(?:process-phase|process-card|question-group)"[^>]*\bopen\b',processes)
+for f in ['index.html','definitions.html','enablement.html','permissions.html','processes.html']:
+    text=(ROOT/f).read_text()
+    assert '<a href="processes.html"' in text,f
+assert '<a href="processes.html" aria-current="page">GTM Processes</a>' in processes
+assert 'Working draft · October 28, 2026' in processes
+assert 'Weekly' in processes and 'Every two weeks' in processes
+assert 'historical closed-record scope' in processes
+assert 'Pure renewals' in processes and 'Q19' in processes
+assert 'OM-only from Stage 6 onward' in processes
+print('PASS: GTM operating draft — process coverage, open-question traceability, review cadence, navigation and draft boundaries.')

@@ -1,10 +1,11 @@
 # GTM Process
 
-Static GitHub Pages site with four connected pages:
+Static GitHub Pages site with five connected pages:
 
 - `index.html`: system specification, lifecycle overview and implementation change log.
 - `definitions.html`: compact GTM definitions with text, stage and alphabet filters.
 - `enablement.html`: Start the deal, Work the deal, Close the deal and Grow the deal; 47 lessons with reminders, scenarios, methods, practice and knowledge checks.
+- `processes.html`: GTM operations working draft with lifecycle process groups, inspection/handoff procedures and an open-question register.
 - `permissions.html`: nine business roles with Salesforce object, field/action and system permissions matrices.
 
 ## Edit and build
@@ -63,3 +64,13 @@ The change log includes a collapsed **New requirements as of Wednesday, October 
 Both `downloads/implementation-requirements.csv` and `downloads/october-21-requirements.csv` begin with **October 21 change** (`New`, `Revised`, `Unchanged`), **Net change**, **Change date**, and **Decision status**, followed by the original requirement columns. The previously shared October 19 download remains a byte-identical compatibility alias of the current changes-only export, and the old release anchor remains reachable within the consolidated group.
 
 Run `python3 scripts/build.py` and `python3 scripts/check.py`. Checks cover table/CSV parity, release metadata, unchanged baseline guards, unique IDs and links, removed Stage 8, OM authority, commitment evidence, notification timing, hardware applicability and delivery-based value tracking. Browser review covers release filters, deep links, downloads, responsive layout and the updated slide. No policy source document is published.
+
+## October 28 GTM operating playbook · working draft
+
+`content/gtm_processes.py` supplies `processes.html`, the new **GTM Processes** global navigation item. It contains 34 process drafts across Start, Work, Close, Grow, Lost and shared GTM Operations, with 49 stable question IDs. Each process includes trigger, suggested operating lead, connected teams, approved foundation, input-quality checks, draft procedure, inspection timing, exception recovery, completion/handoff, suggested measures and source links. Process/question cross-links make handoffs traceable.
+
+The approved October 21 stage specification and requirements exports retain their scope. The four existing pages only gain the global navigation item; their remaining content and requirement downloads are unchanged. New operating procedures and suggested owners are clearly working drafts. The page separately records the October 28 confirmed weekly CRO/sales-leader forecast calls, weekly leader/team reviews, fortnightly pipeline reviews at both levels, weekly partner reviews and weekly opportunity updates. Historical closed-record update scope is explicitly open rather than silently overriding booked protections. Pure renewal forecast separation is carried forward from the user's prior direction; renewal-plus-expansion allocation remains an operating question.
+
+`assets/processes.js` supports search/group filtering, collapsed lifecycle/process disclosures, process/question deep links, copying all questions and print-state restoration. `assets/processes.css` adapts the existing site palette and enablement layout. Native details remain usable without JavaScript. Question answers are maintained through reviewed source edits in this conversation; the page does not imply local form entries are saved.
+
+Run the normal build/check commands. Checks cover source anchors, process and question traceability, draft scope and navigation. Browser verification covers filtering, questions copied exactly once, hash navigation from filtered views, printing, mobile overflow and navigation from the sales-stage page.
