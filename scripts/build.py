@@ -35,7 +35,7 @@ STREAM_NAMES={mid:title for _,title,_,ids in STREAMS for mid in ids}
 def slug(s):
     return re.sub(r'[^a-z0-9]+','-',unicodedata.normalize('NFKD',s).encode('ascii','ignore').decode().lower()).strip('-')
 def nav(page):
-    return '<nav class="gtm-nav" aria-label="GTM pages">'+''.join(f'<a href="{url}"'+(' aria-current="page"' if key==page else '')+f'>{label}</a>' for key,url,label in [('stages','index.html','Sales Stages'),('definitions','definitions.html','GTM Definitions'),('enablement','enablement.html','Enablement'),('permissions','permissions.html','Access & Permissions')])+'</nav>'
+    return '<nav class="gtm-nav" aria-label="GTM pages">'+''.join(f'<a href="{url}"'+(' aria-current="page"' if key==page else '')+f'>{label}</a>' for key,url,label in [('stages','index.html','Sales Stages'),('definitions','definitions.html','GTM Definitions'),('enablement','enablement.html','Enablement'),('processes','processes.html','GTM Processes'),('permissions','permissions.html','Access & Permissions')])+'</nav>'
 def header(page):
     return '<header class="topbar"><span class="brand">GTM Process</span>'+nav(page)+'</header>'
 def scope(m):
@@ -117,6 +117,8 @@ def page(kind):
     return '''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Practical sales enablement: at-a-glance reminders, illustrative scenarios and full courses."><title>Sales Enablement · GTM Process</title><link rel="stylesheet" href="assets/navigation.css"><link rel="stylesheet" href="assets/learning.css"><script src="assets/learning.js" defer></script></head><body id="top" data-page="enablement"><a class="skip" href="#main">Skip to content</a>'''+header('enablement')+'''<div class="enablement-shell"><main id="main"><h1>Sales Enablement</h1><section id="library" aria-label="Courses">'''+filters('enablement',len(MODULES),[])+'''<div id="empty" class="empty" hidden><h2>No matching courses</h2><button type="button" data-reset>Reset filters</button></div><div id="items">'''+streams()+'''</div></section></main></div><a class="backtop" href="#top" aria-label="Back to top"><span aria-hidden="true">↑</span> Back to top</a></body></html>'''
 
 for kind in ['definitions','enablement']:(ROOT/(kind+'.html')).write_text(page(kind))
+from gtm_processes import page as processes_page
+(ROOT/'processes.html').write_text(processes_page(header))
 # Apply shared navigation and approved presentation changes; preserve system rules. Idempotent.
 p=ROOT/'index.html';text=system((ROOT/'content/system-base.html').read_text())
 text=re.sub(r'<nav class="gtm-nav".*?</nav>',lambda m:nav('stages'),text,count=1)
